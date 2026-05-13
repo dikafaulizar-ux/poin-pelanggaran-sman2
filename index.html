@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistem Poin Pelanggaran - SMAN 2 Banda Aceh</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #534AB7; --primary-light: #EEEDFE; --primary-dark: #3C3489;
+    --success: #0F6E56; --success-light: #E1F5EE;
+    --danger: #993C1D; --danger-light: #FAECE7;
+    --warning: #854F0B; --warning-light: #FAEEDA;
+    --info: #185FA5; --info-light: #E6F1FB;
+    --gray: #5F5E5A; --gray-light: #F1EFE8;
+    --text: #1a1a1a; --text-muted: #6b6b6b;
+    --bg: #f5f4f0; --card: #ffffff;
+    --border: rgba(0,0,0,0.1);
+    --radius: 10px; --radius-sm: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+  /* HEADER */
+  .header { background: var(--primary); color: white; padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(83,74,183,0.3); }
+  .header h1 { font-size: 16px; font-weight: 600; letter-spacing: -0.2px; }
+  .header-sub { font-size: 12px; opacity: 0.8; }
+  .btn-settings { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 6px 12px; border-radius: var(--radius-sm); cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; transition: background 0.15s; }
+  .btn-settings:hover { background: rgba(255,255,255,0.25); }
+
+  /* NAV */
+  .nav { background: var(--card); border-bottom: 1px solid var(--border); display: flex; padding: 0 1.5rem; gap: 4px; overflow-x: auto; }
+  .nav-btn { padding: 14px 16px; border: none; background: none; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-muted); border-bottom: 2px solid transparent; transition: all 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+  .nav-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .nav-btn:hover:not(.active) { color: var(--text); background: var(--bg); }
+
+  /* MAIN */
+  .main { max-width: 900px; margin: 0 auto; padding: 1.5rem; }
+
+  /* CARDS GRID */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+  .stat-value { font-size: 24px; font-weight: 600; color: var(--text); }
+  .stat-card.danger { background: var(--danger-light); border-color: rgba(153,60,29,0.2); }
+  .stat-card.danger .stat-value { color: var(--danger); }
+  .stat-card.warning { background: var(--warning-light); border-color: rgba(133,79,11,0.2); }
+  .stat-card.warning .stat-value { color: var(--warning); }
+
+  /* PANEL */
+  .panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.25rem; }
+  .panel-title { font-size: 15px; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+
+  /* FORM */
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
+  label { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+  input, select { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; }
+  input:focus, select:focus { border-color: var(--primary); background: white; }
+  select option { background: white; }
+
+  /* BUTTONS */
+  .btn { padding: 8px 16px; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-danger { background: var(--danger-light); color: var(--danger); border: 1px solid rgba(153,60,29,0.3); }
+  .btn-danger:hover { background: #F0997B; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); background: var(--bg); }
+  td { padding: 10px 12px; border-bottom: 1px solid rgba(0,0,0,0.05); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(83,74,183,0.03); }
+
+  /* BADGE / SANKSI */
+  .badge { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+  .badge-green { background: var(--success-light); color: var(--success); }
+  .badge-blue { background: var(--info-light); color: var(--info); }
+  .badge-yellow { background: var(--warning-light); color: var(--warning); }
+  .badge-orange { background: #FAECE7; color: #993C1D; }
+  .badge-red { background: #FCEBEB; color: #A32D2D; }
+  .badge-darkred { background: #791F1F; color: #fff; }
+
+  /* SEARCH */
+  .search-bar { display: flex; gap: 8px; margin-bottom: 1rem; }
+  .search-bar input { flex: 1; }
+
+  /* EMPTY STATE */
+  .empty { text-align: center; padding: 2.5rem 1rem; color: var(--text-muted); }
+  .empty-icon { font-size: 36px; margin-bottom: 8px; }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--card); border-radius: var(--radius); padding: 1.5rem; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+  .modal-title { font-size: 16px; font-weight: 600; }
+  .btn-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); padding: 4px; line-height: 1; }
+
+  /* TOAST */
+  .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+  .toast { background: var(--text); color: white; padding: 10px 16px; border-radius: var(--radius); font-size: 13px; animation: slideIn 0.3s ease; max-width: 300px; }
+  .toast.success { background: var(--success); }
+  .toast.error { background: var(--danger); }
+  @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  /* LOADING */
+  .loading { display: flex; align-items: center; gap: 8px; padding: 1.5rem; color: var(--text-muted); justify-content: center; }
+  .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* POIN COLOR */
+  .poin-0 { color: var(--success); font-weight: 600; }
+  .poin-1 { color: var(--info); font-weight: 600; }
+  .poin-2 { color: var(--warning); font-weight: 600; }
+  .poin-3 { color: var(--danger); font-weight: 600; }
+  .poin-4 { color: #A32D2D; font-weight: 600; }
+  .poin-5 { color: #791F1F; font-weight: 700; }
+
+  .hidden { display: none !important; }
+  .mt-1 { margin-top: 0.75rem; }
+  .mt-2 { margin-top: 1rem; }
+  .gap-8 { display: flex; gap: 8px; flex-wrap: wrap; }
+  .text-sm { font-size: 12px; color: var(--text-muted); }
+  .fw-500 { font-weight: 500; }
+
+  /* LOGIN SCREEN */
+  #login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+  .login-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); width: 100%; max-width: 400px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.10); }
+  .login-header { background: var(--primary); padding: 2rem 1.5rem; text-align: center; }
+  .login-logo { font-size: 36px; margin-bottom: 8px; }
+  .login-title { color: white; font-size: 17px; font-weight: 600; }
+  .login-subtitle { color: rgba(255,255,255,0.75); font-size: 12px; margin-top: 4px; }
+  .login-body { padding: 1.5rem; }
+  .mode-tabs { display: grid; grid-template-columns: 1fr 1fr; background: var(--bg); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 1.25rem; }
+  .mode-tab { padding: 9px; border: none; background: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-muted); transition: all 0.15s; }
+  .mode-tab.active { background: var(--card); color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .role-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35); color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+  #page-siswa-view .poin-besar { font-size: 52px; font-weight: 700; line-height: 1; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-logo">📋</div>
+      <div class="login-title">Sistem Poin Pelanggaran</div>
+      <div class="login-subtitle">SMA Negeri 2 Banda Aceh</div>
+    </div>
+    <div class="login-body">
+      <div class="mode-tabs">
+        <button class="mode-tab active" id="tab-mode-guru" onclick="gantiModeLogin('guru')">🧑‍🏫 Guru</button>
+        <button class="mode-tab" id="tab-mode-siswa" onclick="gantiModeLogin('siswa')">🎓 Siswa</button>
+      </div>
+
+      <!-- Form Guru -->
+      <div id="form-login-guru">
+        <div class="form-group">
+          <label>Nama Guru</label>
+          <input type="text" id="l-nama-guru" placeholder="Masukkan nama Anda">
+        </div>
+        <div class="form-group mt-1">
+          <label>Password Guru</label>
+          <input type="password" id="l-pass-guru" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginGuru()">
+        </div>
+        <div id="err-guru" style="color:var(--danger);font-size:12px;margin-top:8px;display:none;">Password salah. Coba lagi.</div>
+        <button class="btn btn-primary mt-2" style="width:100%;justify-content:center;" onclick="loginGuru()">Masuk sebagai Guru</button>
+      </div>
+
+      <!-- Form Siswa -->
+      <div id="form-login-siswa" class="hidden">
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Masukkan NISN <strong>atau</strong> nama lengkap Anda untuk melihat poin pelanggaran.</p>
+        <div class="form-group">
+          <label>NISN atau Nama Lengkap</label>
+          <input type="text" id="l-nisn-siswa" placeholder="cth: 0092885356 atau AFIFA MELISA" onkeydown="if(event.key==='Enter')loginSiswa()">
+        </div>
+        <div id="err-siswa" style="color:var(--danger);font-size:12px;margin-top:8px;display:none;">NISN / nama tidak ditemukan. Hubungi guru.</div>
+        <button class="btn btn-primary mt-2" style="width:100%;justify-content:center;" onclick="loginSiswa()">Lihat Poin Saya</button>
+      </div>
+
+      <p style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:1rem;">Hubungi admin jika mengalami kendala akses.</p>
+    </div>
+  </div>
+</div>
+
+<div class="header">
+  <div>
+    <div class="header h1" style="font-size:15px;font-weight:600;">📋 Sistem Poin Pelanggaran</div>
+    <div class="header-sub">SMA Negeri 2 Banda Aceh</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span class="role-badge" id="role-badge">–</span>
+    <button class="btn-settings" id="btn-header-settings" onclick="bukaSettings()" style="display:none;">⚙</button>
+    <button class="btn-settings" onclick="logout()">Keluar</button>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="bukaTab('dashboard')" id="tab-dashboard">📊 Dashboard</button>
+  <button class="nav-btn guru-only" onclick="bukaTab('input')" id="tab-input">✏️ Input Pelanggaran</button>
+  <button class="nav-btn guru-only" onclick="bukaTab('siswa')" id="tab-siswa">👥 Data Siswa</button>
+  <button class="nav-btn guru-only" onclick="bukaTab('riwayat')" id="tab-riwayat">📋 Riwayat</button>
+  <button class="nav-btn hidden" onclick="bukaTab('siswa-view')" id="tab-siswa-view">🎓 Poin Saya</button>
+</div>
+
+<div class="main">
+
+  <!-- ===== DASHBOARD ===== -->
+  <div id="page-dashboard">
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card"><div class="stat-label">Total Siswa</div><div class="stat-value" id="stat-total">–</div></div>
+      <div class="stat-card danger"><div class="stat-label">Poin Tertinggi</div><div class="stat-value" id="stat-max">–</div></div>
+      <div class="stat-card warning"><div class="stat-label">Total Pelanggaran</div><div class="stat-value" id="stat-pelanggaran">–</div></div>
+      <div class="stat-card"><div class="stat-label">Perlu Pembinaan IV+</div><div class="stat-value" id="stat-kritis">–</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">⚠️ Siswa dengan Poin Tertinggi</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Nama</th><th>Kelas</th><th>Total Poin</th><th>Status Sanksi</th></tr></thead>
+          <tbody id="tbl-top"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== INPUT PELANGGARAN ===== -->
+  <div id="page-input" class="hidden">
+    <div class="panel">
+      <div class="panel-title">✏️ Input Pelanggaran Siswa</div>
+
+      <div class="form-group mt-1">
+        <label>Cari Siswa (Nama / NISN)</label>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="cari-siswa" placeholder="Ketik nama atau NISN siswa..." oninput="filterSiswaInput()">
+        </div>
+        <div id="autocomplete" style="background:white;border:1px solid var(--border);border-radius:var(--radius-sm);margin-top:2px;display:none;max-height:180px;overflow-y:auto;position:relative;z-index:10;"></div>
+      </div>
+
+      <div id="siswa-terpilih" style="background:var(--primary-light);border:1px solid rgba(83,74,183,0.2);border-radius:var(--radius-sm);padding:10px 14px;margin-top:10px;display:none;">
+        <div class="fw-500" id="nama-terpilih">–</div>
+        <div class="text-sm" id="info-terpilih">–</div>
+      </div>
+
+      <div class="form-grid mt-2">
+        <div class="form-group">
+          <label>Kategori Pelanggaran</label>
+          <select id="inp-kategori" onchange="isiJenisPelanggaran()">
+            <option value="">– Pilih Kategori –</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Jenis Pelanggaran</label>
+          <select id="inp-jenis" onchange="isiPoinOtomatis()">
+            <option value="">– Pilih Jenis –</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Poin Pelanggaran</label>
+          <input type="number" id="inp-poin" min="1" max="200" placeholder="Poin">
+        </div>
+        <div class="form-group">
+          <label>Dicatat Oleh</label>
+          <input type="text" id="inp-guru" placeholder="Nama guru / wali kelas">
+        </div>
+      </div>
+
+      <div class="mt-2">
+        <button class="btn btn-primary" onclick="simpanPelanggaran()" id="btn-simpan">💾 Simpan Pelanggaran</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DATA SISWA ===== -->
+  <div id="page-siswa" class="hidden">
+    <div class="panel">
+      <div class="panel-title" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <span>👥 Daftar Siswa</span>
+        <div class="gap-8">
+          <button class="btn btn-sm" style="background:#E1F5EE;color:#0F6E56;border:1px solid rgba(15,110,86,0.3);" onclick="bukaModalImport()">📥 Import Data</button>
+          <button class="btn btn-primary btn-sm" onclick="bukaModalTambahSiswa()">+ Tambah Siswa</button>
+        </div>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="cari-siswa-tbl" placeholder="Cari nama atau NISN..." oninput="renderTabelSiswa()">
+        <select id="filter-kelas" onchange="renderTabelSiswa()" style="width:140px;">
+          <option value="">Semua Kelas</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>NISN</th><th>Nama</th><th>Kelas</th><th>Total Poin</th><th>Status Sanksi</th><th></th></tr></thead>
+          <tbody id="tbl-siswa"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RIWAYAT ===== -->
+  <div id="page-riwayat" class="hidden">
+    <div class="panel">
+      <div class="panel-title">📋 Riwayat Pelanggaran</div>
+      <div class="search-bar">
+        <input type="text" id="cari-riwayat" placeholder="Cari nama, NISN, atau jenis pelanggaran..." oninput="renderRiwayat()">
+        <select id="filter-kategori-riwayat" onchange="renderRiwayat()" style="width:160px;">
+          <option value="">Semua Kategori</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Waktu</th><th>Nama</th><th>Kelas</th><th>Pelanggaran</th><th>Poin</th><th></th></tr></thead>
+          <tbody id="tbl-riwayat"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== VIEW SISWA (mode siswa) ===== -->
+  <div id="page-siswa-view" class="hidden">
+    <div id="sv-loading" class="panel" style="text-align:center;padding:2rem;">
+      <div class="loading" style="justify-content:center;"><div class="spinner"></div> Memuat data...</div>
+    </div>
+    <div id="sv-content" class="hidden">
+      <div class="panel" style="text-align:center;padding:2rem 1.5rem;">
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px;">Halo,</div>
+        <div style="font-size:20px;font-weight:600;margin-bottom:2px;" id="sv-nama">–</div>
+        <div style="font-size:13px;color:var(--text-muted);" id="sv-kelas">–</div>
+        <div style="margin: 1.5rem 0 0.5rem;">
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">Total Poin Pelanggaran</div>
+          <div class="poin-besar" id="sv-poin">0</div>
+        </div>
+        <div id="sv-sanksi-badge" style="margin-top:10px;"></div>
+        <div id="sv-sanksi-desc" style="font-size:13px;color:var(--text-muted);margin-top:8px;"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">📋 Riwayat Pelanggaran Saya</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Waktu</th><th>Pelanggaran</th><th>Kategori</th><th>Poin</th></tr></thead>
+            <tbody id="sv-tbl-riwayat"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- MODAL TAMBAH SISWA -->
+<div class="modal-overlay" id="modal-siswa">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Tambah Siswa Baru</span>
+      <button class="btn-close" onclick="tutupModal('modal-siswa')">×</button>
+    </div>
+    <div class="form-group"><label>NISN</label><input type="text" id="m-nisn" placeholder="Masukkan NISN"></div>
+    <div class="form-group mt-1"><label>Nama Lengkap</label><input type="text" id="m-nama" placeholder="Nama siswa"></div>
+    <div class="form-group mt-1"><label>Kelas</label><input type="text" id="m-kelas" placeholder="cth: XII IPA 1"></div>
+    <div class="mt-2 gap-8">
+      <button class="btn btn-primary" onclick="simpanSiswa()">Simpan</button>
+      <button class="btn" onclick="tutupModal('modal-siswa')" style="border:1px solid var(--border);">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RIWAYAT SISWA -->
+<div class="modal-overlay" id="modal-riwayat-siswa">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-riwayat-judul">Riwayat Pelanggaran</span>
+      <button class="btn-close" onclick="tutupModal('modal-riwayat-siswa')">×</button>
+    </div>
+    <div id="modal-riwayat-isi"><div class="loading"><div class="spinner"></div> Memuat...</div></div>
+  </div>
+</div>
+
+<!-- MODAL IMPORT DATA -->
+<div class="modal-overlay" id="modal-import">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header">
+      <span class="modal-title">📥 Import Data Siswa</span>
+      <button class="btn-close" onclick="tutupModal('modal-import')">×</button>
+    </div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem;">Data siswa berikut siap diimpor ke Google Sheet. Centang siswa yang ingin ditambahkan, lalu klik Import.</p>
+
+    <div style="background:var(--bg);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+      <label style="font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="chk-semua" onchange="toggleSemuaSiswa(this.checked)"> Pilih semua
+      </label>
+      <span id="import-count" style="font-size:12px;color:var(--text-muted);">0 dipilih</span>
+    </div>
+
+    <div style="max-height:320px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-sm);">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead style="position:sticky;top:0;">
+          <tr style="background:var(--bg);">
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--text-muted);border-bottom:1px solid var(--border);width:36px;"></th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--text-muted);border-bottom:1px solid var(--border);">Nama Siswa</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--text-muted);border-bottom:1px solid var(--border);">NISN</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--text-muted);border-bottom:1px solid var(--border);">Kelas</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--text-muted);border-bottom:1px solid var(--border);">L/P</th>
+          </tr>
+        </thead>
+        <tbody id="tbl-import"></tbody>
+      </table>
+    </div>
+
+    <div id="import-progress" style="display:none;margin-top:12px;">
+      <div style="background:var(--bg);border-radius:var(--radius-sm);height:8px;overflow:hidden;">
+        <div id="import-bar" style="height:100%;background:var(--primary);width:0%;transition:width 0.3s;"></div>
+      </div>
+      <div id="import-status" style="font-size:12px;color:var(--text-muted);margin-top:6px;text-align:center;">Mengimpor...</div>
+    </div>
+
+    <div class="mt-2 gap-8">
+      <button class="btn btn-primary" onclick="jalankanImport()" id="btn-import">📥 Import ke Google Sheet</button>
+      <button class="btn" onclick="tutupModal('modal-import')" style="border:1px solid var(--border);">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SETTINGS -->
+<div class="modal-overlay" id="modal-settings">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">⚙ Pengaturan Koneksi</span>
+      <button class="btn-close" onclick="tutupModal('modal-settings')">×</button>
+    </div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem;">Masukkan URL Google Apps Script yang sudah di-deploy sebagai Web App.</p>
+    <div class="form-group">
+      <label>URL Google Apps Script</label>
+      <input type="url" id="s-url" placeholder="https://script.google.com/macros/s/.../exec">
+    </div>
+    <div class="form-group mt-1">
+      <label>Nama Sekolah (opsional)</label>
+      <input type="text" id="s-sekolah" placeholder="SMA Negeri 2 Banda Aceh">
+    </div>
+    <div class="mt-2 gap-8">
+      <button class="btn btn-primary" onclick="simpanSettings()">Simpan & Muat Data</button>
+      <button class="btn" onclick="tutupModal('modal-settings')" style="border:1px solid var(--border);">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ============================================================
+// DATA PELANGGARAN (dari dokumen)
+// ============================================================
+const DATA_PELANGGARAN = [
+  { kategori: "Kehadiran", jenis: "Terlambat hadir", poin: 2 },
+  { kategori: "Kehadiran", jenis: "Tidak masuk tanpa keterangan", poin: 3 },
+  { kategori: "Kehadiran", jenis: "Tidak masuk dengan keterangan palsu", poin: 6 },
+  { kategori: "Kehadiran", jenis: "Meninggalkan sekolah/pulang sebelum jam pelajaran berakhir tanpa izin (Cabut)", poin: 6 },
+  { kategori: "Kegiatan Belajar Mengajar", jenis: "Tidur saat kegiatan pembelajaran berlangsung", poin: 2 },
+  { kategori: "Kegiatan Belajar Mengajar", jenis: "Membuat gaduh/ribut dalam kelas", poin: 2 },
+  { kategori: "Kegiatan Belajar Mengajar", jenis: "Makan saat pelajaran berlangsung", poin: 2 },
+  { kategori: "Kegiatan Belajar Mengajar", jenis: "Tidak mengikuti Ekstrakurikuler tanpa keterangan", poin: 3 },
+  { kategori: "Kegiatan Belajar Mengajar", jenis: "Tidak mengikuti pelajaran/cabut dari ruang belajar", poin: 5 },
+  { kategori: "Kegiatan Belajar Mengajar", jenis: "Membawa/mengoperasikan HP tanpa izin", poin: 10 },
+  { kategori: "Kegiatan Belajar Mengajar", jenis: "Berada di luar sekolah saat jam efektif dengan seragam", poin: 10 },
+  { kategori: "Seragam Putri", jenis: "Memakai seragam tidak sesuai ketentuan", poin: 2 },
+  { kategori: "Seragam Putri", jenis: "Kuku panjang/dicat/berinai", poin: 2 },
+  { kategori: "Seragam Putri", jenis: "Rambut terurai keluar dari jilbab", poin: 2 },
+  { kategori: "Seragam Putri", jenis: "Memakai make up", poin: 2 },
+  { kategori: "Seragam Putri", jenis: "Tidak memakai ciput", poin: 2 },
+  { kategori: "Seragam Putri", jenis: "Tidak memakai kaus kaki putih dan panjang", poin: 2 },
+  { kategori: "Seragam Putra", jenis: "Memakai seragam tidak sesuai ketentuan", poin: 2 },
+  { kategori: "Seragam Putra", jenis: "Rambut menutupi alis/tengkuk/telinga (>4 cm)", poin: 2 },
+  { kategori: "Seragam Putra", jenis: "Tidak memakai ikat pinggang hitam", poin: 2 },
+  { kategori: "Seragam Putra", jenis: "Tidak memasukkan baju ke dalam celana", poin: 2 },
+  { kategori: "Seragam Putra", jenis: "Memakai aksesoris (gelang/kalung/anting/cincin)", poin: 2 },
+  { kategori: "Seragam Putra", jenis: "Baju/celana ditulisi gambar tidak etis/robek", poin: 4 },
+  { kategori: "Seragam Putra", jenis: "Rambut dipotong/dicat mengikuti mode tidak sesuai", poin: 5 },
+  { kategori: "Seragam Putra", jenis: "Ujung celana dibelah dan pakai resleting", poin: 5 },
+  { kategori: "Seragam Putra", jenis: "Anggota tubuh ditindik/ditato", poin: 10 },
+  { kategori: "Seragam Umum", jenis: "Tidak memakai seragam sesuai jadwal", poin: 2 },
+  { kategori: "Seragam Umum", jenis: "Tidak memakai simbol dan atribut sekolah", poin: 2 },
+  { kategori: "Seragam Umum", jenis: "Tidak memakai pakaian dalam/singlet putih", poin: 2 },
+  { kategori: "Seragam Umum", jenis: "Tidak memakai seragam olahraga saat olahraga", poin: 3 },
+  { kategori: "Seragam Umum", jenis: "Tas/buku ditulisi gambar tidak etis", poin: 3 },
+  { kategori: "Seragam Umum", jenis: "Memakai sandal/sepatu sandal di sekolah", poin: 5 },
+  { kategori: "Sikap", jenis: "Membuang sampah tidak pada tempatnya", poin: 2 },
+  { kategori: "Sikap", jenis: "Berkata bohong menimbulkan konflik", poin: 5 },
+  { kategori: "Sikap", jenis: "Berbicara kotor/mengumpat", poin: 8 },
+  { kategori: "Sikap", jenis: "Makan/minum di kantin saat pelajaran berlangsung tanpa izin", poin: 10 },
+  { kategori: "Sikap", jenis: "Motor knalpot blong atau tidak lengkap atribut", poin: 10 },
+  { kategori: "Sikap", jenis: "Merusak/mencoret fasilitas sekolah", poin: 10 },
+  { kategori: "Sikap", jenis: "Memprovokasi orang lain berbuat negatif", poin: 15 },
+  { kategori: "Sikap", jenis: "Merusak/menghilangkan barang milik orang lain", poin: 25 },
+  { kategori: "Sikap", jenis: "Melihat namun tidak melaporkan perundungan", poin: 25 },
+  { kategori: "Sikap", jenis: "Menggunakan barang milik orang lain tanpa izin", poin: 50 },
+  { kategori: "Sikap", jenis: "Berkelahi/membuat keributan di sekolah atau luar sekolah berseragam", poin: 50 },
+  { kategori: "Sikap", jenis: "Menjadi penampung/penadah barang curian", poin: 50 },
+  { kategori: "Sikap", jenis: "Membawa benda tajam/petasan/bahan peledak", poin: 50 },
+  { kategori: "Sikap", jenis: "Melakukan pelecehan fisik/verbal", poin: 50 },
+  { kategori: "Sikap", jenis: "Memalsukan tanda tangan orang tua/guru/kepala sekolah", poin: 50 },
+  { kategori: "Sikap", jenis: "Masuk/keluar sekolah dengan lompat pagar", poin: 70 },
+  { kategori: "Berat", jenis: "Perjudian atau kegiatan sejenisnya", poin: 100 },
+  { kategori: "Berat", jenis: "Membawa/mengedarkan/mengkonsumsi rokok", poin: 100 },
+  { kategori: "Berat", jenis: "Membawa/mengedarkan barang pornografi", poin: 100 },
+  { kategori: "Berat", jenis: "Memalak/mengompas/memeras orang lain", poin: 100 },
+  { kategori: "Berat", jenis: "Menganiaya/tindak kekerasan kepada orang lain", poin: 100 },
+  { kategori: "Berat", jenis: "Merundung (bullying) orang lain", poin: 100 },
+  { kategori: "Berat", jenis: "Membawa/menonton video/konten porno", poin: 100 },
+  { kategori: "Berat", jenis: "Bergaul bebas/berpacaran/berkhalwat berseragam", poin: 100 },
+  { kategori: "Berat", jenis: "Mencuri barang milik sekolah/orang lain", poin: 100 },
+  { kategori: "Berat", jenis: "Tertangkap mencuri di luar sekolah", poin: 100 },
+  { kategori: "Berat", jenis: "Menjadi anggota genk/kelompok terlarang", poin: 100 },
+  { kategori: "Berat", jenis: "Menghina/melecehkan guru/kepala sekolah secara lisan/tulisan", poin: 100 },
+  { kategori: "Berat", jenis: "Membuat konten/video yang mempermalukan sekolah", poin: 100 },
+  { kategori: "Berat", jenis: "Berbuat asusila/hamil/menghamili/LGBT/menikah saat jadi siswa", poin: 200 },
+  { kategori: "Berat", jenis: "Membawa/mengedarkan/mengkonsumsi NARKOBA/MIRAS", poin: 200 },
+];
+
+// ============================================================
+// AUTH CONFIG - Ganti password di sini
+// ============================================================
+const PASSWORD_GURU = "sman2bna2025"; // <-- GANTI PASSWORD DI SINI
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_H6Mw3bxz_7cIxMXCNqGPxfdd1gH0cUVt9JjGNX5MpMgW8JFKCEleYDBg6fMoqZQ/exec";
+
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  apiUrl: localStorage.getItem("apiUrl") || APPS_SCRIPT_URL,
+  guru: localStorage.getItem("guru") || "",
+  siswa: [],
+  pelanggaran: [],
+  siswaInput: null,
+  loading: false,
+  role: null,      // 'guru' | 'siswa'
+  siswaSaya: null  // data siswa yg login (mode siswa)
+};
+
+// ============================================================
+// LOGIN / AUTH
+// ============================================================
+function gantiModeLogin(mode) {
+  document.getElementById("tab-mode-guru").classList.toggle("active", mode === "guru");
+  document.getElementById("tab-mode-siswa").classList.toggle("active", mode === "siswa");
+  document.getElementById("form-login-guru").classList.toggle("hidden", mode !== "guru");
+  document.getElementById("form-login-siswa").classList.toggle("hidden", mode !== "siswa");
+  document.getElementById("err-guru").style.display = "none";
+  document.getElementById("err-siswa").style.display = "none";
+}
+
+function loginGuru() {
+  const nama = document.getElementById("l-nama-guru").value.trim();
+  const pass = document.getElementById("l-pass-guru").value;
+  if (!nama) { toast("Masukkan nama guru", "error"); return; }
+  if (pass !== PASSWORD_GURU) {
+    document.getElementById("err-guru").style.display = "block";
+    return;
+  }
+  state.role = "guru";
+  state.guru = nama;
+  localStorage.setItem("guru", nama);
+  masukAplikasi();
+}
+
+async function loginSiswa() {
+  const input = document.getElementById("l-nisn-siswa").value.trim();
+  if (!input) { toast("Masukkan NISN atau nama", "error"); return; }
+  if (!state.apiUrl) {
+    toast("Aplikasi belum dikonfigurasi. Hubungi guru/admin.", "error");
+    return;
+  }
+  if (!state.siswa.length) {
+    const res = await api({ action: "getSiswa" });
+    if (res?.success) state.siswa = res.data;
+  }
+  // Cari berdasarkan NISN dulu, lalu nama (case-insensitive)
+  const inputUpper = input.toUpperCase();
+  const siswa = state.siswa.find(s =>
+    s.nisn === input ||
+    s.nama.toUpperCase() === inputUpper
+  );
+  if (!siswa) {
+    document.getElementById("err-siswa").style.display = "block";
+    return;
+  }
+  state.role = "siswa";
+  state.siswaSaya = siswa;
+  masukAplikasi();
+}
+
+function masukAplikasi() {
+  document.getElementById("login-screen").style.display = "none";
+
+  if (state.role === "guru") {
+    document.querySelectorAll(".guru-only").forEach(el => el.classList.remove("hidden"));
+    document.getElementById("tab-siswa-view").classList.add("hidden");
+    document.getElementById("role-badge").textContent = "🧑‍🏫 " + state.guru;
+    document.getElementById("btn-header-settings").style.display = "";
+    muatData();
+    bukaTab("dashboard");
+  } else {
+    // Mode siswa — sembunyikan tab guru
+    document.querySelectorAll(".guru-only").forEach(el => el.classList.add("hidden"));
+    document.getElementById("tab-siswa-view").classList.remove("hidden");
+    document.getElementById("tab-dashboard").classList.add("hidden");
+    document.getElementById("role-badge").textContent = "🎓 " + state.siswaSaya.nama;
+    document.getElementById("btn-header-settings").style.display = "none";
+    muatData().then(() => tampilkanViewSiswa());
+    bukaTab("siswa-view");
+  }
+}
+
+function logout() {
+  state.role = null;
+  state.siswaSaya = null;
+  state.siswa = [];
+  state.pelanggaran = [];
+  document.getElementById("login-screen").style.display = "flex";
+  document.getElementById("l-pass-guru").value = "";
+  document.getElementById("l-nisn-siswa").value = "";
+  document.getElementById("err-guru").style.display = "none";
+  document.getElementById("err-siswa").style.display = "none";
+  // Reset tabs
+  document.querySelectorAll(".guru-only").forEach(el => el.classList.remove("hidden"));
+  document.getElementById("tab-siswa-view").classList.add("hidden");
+  document.getElementById("tab-dashboard").classList.remove("hidden");
+}
+
+async function tampilkanViewSiswa() {
+  const s = state.siswa.find(x => x.nisn === state.siswaSaya.nisn) || state.siswaSaya;
+  document.getElementById("sv-loading").classList.add("hidden");
+  document.getElementById("sv-content").classList.remove("hidden");
+  document.getElementById("sv-nama").textContent = s.nama;
+  document.getElementById("sv-kelas").textContent = s.kelas;
+  const poinEl = document.getElementById("sv-poin");
+  poinEl.textContent = s.totalPoin;
+  poinEl.className = "poin-besar " + poinClass(s.totalPoin);
+
+  const sk = getSanksi(s.totalPoin);
+  document.getElementById("sv-sanksi-badge").innerHTML = `<span class="badge ${sk.kelas}" style="font-size:13px;padding:5px 14px;">${sk.label}</span>`;
+  document.getElementById("sv-sanksi-desc").textContent = sk.ringkas;
+
+  // Riwayat pelanggaran siswa ini
+  const res = await api({ action: "getPelanggaran", nisn: s.nisn });
+  const tbody = document.getElementById("sv-tbl-riwayat");
+  if (!res?.success || !res.data.length) {
+    tbody.innerHTML = '<tr><td colspan="4"><div class="empty">Tidak ada pelanggaran tercatat 🎉</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = res.data.reverse().map(p => `<tr>
+    <td class="text-sm">${formatTgl(p.timestamp)}</td>
+    <td>${esc(p.jenisPelanggaran)}</td>
+    <td class="text-sm">${esc(p.kategori)}</td>
+    <td><span class="${poinClass(p.poin)}">${p.poin}</span></td>
+  </tr>`).join("");
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload = function() {
+  isiKategori();
+  // Selalu tampilkan login screen dulu
+  document.getElementById("login-screen").style.display = "flex";
+};
+
+// ============================================================
+// API CALL
+// ============================================================
+async function api(params) {
+  if (!state.apiUrl) { toast("URL Apps Script belum diset", "error"); return null; }
+  try {
+    const resp = await fetch(state.apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify(params),
+      mode: "cors"
+    });
+    const data = await resp.json();
+    return data;
+  } catch(e) {
+    // Coba GET jika POST gagal (CORS)
+    try {
+      const qs = new URLSearchParams(params).toString();
+      const resp = await fetch(state.apiUrl + "?" + qs);
+      return await resp.json();
+    } catch(e2) {
+      toast("Gagal terhubung ke server: " + e2.message, "error");
+      return null;
+    }
+  }
+}
+
+async function muatData() {
+  showLoading("tbl-siswa");
+  showLoading("tbl-top");
+  const [resSiswa, resPelanggaran] = await Promise.all([
+    api({ action: "getSiswa" }),
+    api({ action: "getPelanggaran" })
+  ]);
+  if (resSiswa?.success) state.siswa = resSiswa.data;
+  if (resPelanggaran?.success) state.pelanggaran = resPelanggaran.data;
+  renderStats();
+  renderTabelSiswa();
+  renderTopSiswa();
+  renderRiwayat();
+  isiFilterKelas();
+  isiFilterKategoriRiwayat();
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function bukaTab(tab) {
+  ["dashboard","input","siswa","riwayat","siswa-view"].forEach(t => {
+    document.getElementById("page-" + t).classList.add("hidden");
+    const tabEl = document.getElementById("tab-" + t);
+    if (tabEl) tabEl.classList.remove("active");
+  });
+  document.getElementById("page-" + tab).classList.remove("hidden");
+  const activeTab = document.getElementById("tab-" + tab);
+  if (activeTab) activeTab.classList.add("active");
+}
+
+// ============================================================
+// SANKSI
+// ============================================================
+function getSanksi(poin) {
+  if (poin < 40)  return { label: "Pembinaan I",   kelas: "badge-green",   ringkas: "Peringatan lisan/tertulis" };
+  if (poin <= 80) return { label: "Pembinaan II",  kelas: "badge-blue",    ringkas: "Peringatan tertulis" };
+  if (poin <= 120)return { label: "Pembinaan III", kelas: "badge-yellow",  ringkas: "Pernyataan di atas kertas" };
+  if (poin <= 160)return { label: "Pembinaan IV",  kelas: "badge-orange",  ringkas: "Pernyataan bermaterai + panggil ortu" };
+  if (poin <= 199)return { label: "Pembinaan V",   kelas: "badge-red",     ringkas: "Panggil ortu + Mahkamah tatib" };
+  return { label: "≥ 200 Poin", kelas: "badge-darkred", ringkas: "Dikembalikan ke orang tua" };
+}
+
+function poinClass(poin) {
+  if (poin === 0) return "poin-0";
+  if (poin < 41)  return "poin-1";
+  if (poin < 81)  return "poin-2";
+  if (poin < 121) return "poin-3";
+  if (poin < 161) return "poin-4";
+  return "poin-5";
+}
+
+// ============================================================
+// STATS & DASHBOARD
+// ============================================================
+function renderStats() {
+  const total = state.siswa.length;
+  const maxPoin = state.siswa.reduce((m, s) => Math.max(m, s.totalPoin), 0);
+  const kritis = state.siswa.filter(s => s.totalPoin >= 121).length;
+  document.getElementById("stat-total").textContent = total;
+  document.getElementById("stat-max").textContent = maxPoin;
+  document.getElementById("stat-pelanggaran").textContent = state.pelanggaran.length;
+  document.getElementById("stat-kritis").textContent = kritis;
+}
+
+function renderTopSiswa() {
+  const sorted = [...state.siswa].sort((a,b) => b.totalPoin - a.totalPoin).slice(0, 10);
+  const tbody = document.getElementById("tbl-top");
+  if (!sorted.length) { tbody.innerHTML = '<tr><td colspan="4"><div class="empty"><div>Belum ada data siswa</div></div></td></tr>'; return; }
+  tbody.innerHTML = sorted.map(s => {
+    const sk = getSanksi(s.totalPoin);
+    return `<tr>
+      <td class="fw-500">${esc(s.nama)}</td>
+      <td>${esc(s.kelas)}</td>
+      <td><span class="${poinClass(s.totalPoin)}">${s.totalPoin}</span></td>
+      <td><span class="badge ${sk.kelas}">${sk.label}</span></td>
+    </tr>`;
+  }).join("");
+}
+
+// ============================================================
+// TABEL SISWA
+// ============================================================
+function renderTabelSiswa() {
+  const q = (document.getElementById("cari-siswa-tbl")?.value || "").toLowerCase();
+  const kelas = document.getElementById("filter-kelas")?.value || "";
+  let data = state.siswa.filter(s =>
+    (!q || s.nama.toLowerCase().includes(q) || s.nisn.includes(q)) &&
+    (!kelas || s.kelas === kelas)
+  );
+  const tbody = document.getElementById("tbl-siswa");
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon">👤</div><div>Tidak ada data siswa</div></div></td></tr>'; return; }
+  tbody.innerHTML = data.map(s => {
+    const sk = getSanksi(s.totalPoin);
+    return `<tr>
+      <td class="text-sm">${esc(s.nisn)}</td>
+      <td class="fw-500">${esc(s.nama)}</td>
+      <td>${esc(s.kelas)}</td>
+      <td><span class="${poinClass(s.totalPoin)}">${s.totalPoin}</span></td>
+      <td><span class="badge ${sk.kelas}">${sk.label}</span></td>
+      <td>
+        <div class="gap-8">
+          <button class="btn btn-sm" style="border:1px solid var(--border);" onclick="lihatRiwayatSiswa('${esc(s.nisn)}','${esc(s.nama)}')">📋</button>
+          <button class="btn btn-danger btn-sm" onclick="hapusSiswaFn('${esc(s.nisn)}','${esc(s.nama)}')">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+function isiFilterKelas() {
+  const kelas = [...new Set(state.siswa.map(s => s.kelas).filter(Boolean))].sort();
+  const sel = document.getElementById("filter-kelas");
+  if (!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Semua Kelas</option>' + kelas.map(k => `<option value="${esc(k)}" ${k===cur?"selected":""}>${esc(k)}</option>`).join("");
+}
+
+// ============================================================
+// RIWAYAT
+// ============================================================
+function renderRiwayat() {
+  const q = (document.getElementById("cari-riwayat")?.value || "").toLowerCase();
+  const kat = document.getElementById("filter-kategori-riwayat")?.value || "";
+  let data = [...state.pelanggaran].reverse().filter(p =>
+    (!q || p.nama.toLowerCase().includes(q) || p.nisn.includes(q) || p.jenisPelanggaran.toLowerCase().includes(q)) &&
+    (!kat || p.kategori === kat)
+  );
+  const tbody = document.getElementById("tbl-riwayat");
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon">📋</div><div>Tidak ada riwayat pelanggaran</div></div></td></tr>'; return; }
+  tbody.innerHTML = data.map((p, i) => `<tr>
+    <td class="text-sm">${formatTgl(p.timestamp)}</td>
+    <td>
+      <div class="fw-500">${esc(p.nama)}</div>
+      <div class="text-sm">${esc(p.nisn)}</div>
+    </td>
+    <td class="text-sm">${esc(p.kelas)}</td>
+    <td>
+      <div>${esc(p.jenisPelanggaran)}</div>
+      <div class="text-sm">${esc(p.kategori)}</div>
+    </td>
+    <td><span class="${poinClass(p.poin)}">${p.poin}</span></td>
+    <td><button class="btn btn-danger btn-sm" onclick="hapusPelanggaranFn(${p.id})">🗑</button></td>
+  </tr>`).join("");
+}
+
+function isiFilterKategoriRiwayat() {
+  const kats = [...new Set(state.pelanggaran.map(p => p.kategori).filter(Boolean))].sort();
+  const sel = document.getElementById("filter-kategori-riwayat");
+  if (!sel) return;
+  sel.innerHTML = '<option value="">Semua Kategori</option>' + kats.map(k => `<option value="${esc(k)}">${esc(k)}</option>`).join("");
+}
+
+// ============================================================
+// INPUT PELANGGARAN
+// ============================================================
+function isiKategori() {
+  const kats = [...new Set(DATA_PELANGGARAN.map(d => d.kategori))];
+  const sel = document.getElementById("inp-kategori");
+  sel.innerHTML = '<option value="">– Pilih Kategori –</option>' + kats.map(k => `<option value="${esc(k)}">${esc(k)}</option>`).join("");
+}
+
+function isiJenisPelanggaran() {
+  const kat = document.getElementById("inp-kategori").value;
+  const jenis = DATA_PELANGGARAN.filter(d => d.kategori === kat);
+  const sel = document.getElementById("inp-jenis");
+  sel.innerHTML = '<option value="">– Pilih Jenis –</option>' + jenis.map(j => `<option value="${esc(j.jenis)}" data-poin="${j.poin}">${esc(j.jenis)} (${j.poin} poin)</option>`).join("");
+  document.getElementById("inp-poin").value = "";
+}
+
+function isiPoinOtomatis() {
+  const sel = document.getElementById("inp-jenis");
+  const opt = sel.options[sel.selectedIndex];
+  if (opt && opt.dataset.poin) document.getElementById("inp-poin").value = opt.dataset.poin;
+  else document.getElementById("inp-poin").value = "";
+}
+
+function filterSiswaInput() {
+  const q = document.getElementById("cari-siswa").value.toLowerCase();
+  const ac = document.getElementById("autocomplete");
+  if (!q || q.length < 2) { ac.style.display = "none"; return; }
+  const hasil = state.siswa.filter(s => s.nama.toLowerCase().includes(q) || s.nisn.includes(q)).slice(0, 8);
+  if (!hasil.length) { ac.style.display = "none"; return; }
+  ac.style.display = "block";
+  ac.innerHTML = hasil.map(s => `<div onclick="pilihSiswa('${esc(s.nisn)}')" style="padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--border);font-size:13px;" onmouseover="this.style.background='var(--primary-light)'" onmouseout="this.style.background='white'">
+    <strong>${esc(s.nama)}</strong> <span style="color:var(--text-muted)">${esc(s.kelas)} · ${esc(s.nisn)}</span>
+  </div>`).join("");
+}
+
+function pilihSiswa(nisn) {
+  const s = state.siswa.find(x => x.nisn === nisn);
+  if (!s) return;
+  state.siswaInput = s;
+  document.getElementById("cari-siswa").value = s.nama;
+  document.getElementById("autocomplete").style.display = "none";
+  const el = document.getElementById("siswa-terpilih");
+  el.style.display = "block";
+  const sk = getSanksi(s.totalPoin);
+  document.getElementById("nama-terpilih").textContent = s.nama;
+  document.getElementById("info-terpilih").innerHTML = `NISN: ${s.nisn} · Kelas: ${s.kelas} · Poin Saat Ini: <strong>${s.totalPoin}</strong> · <span class="badge ${sk.kelas}" style="font-size:11px;">${sk.label}</span>`;
+}
+
+async function simpanPelanggaran() {
+  if (!state.siswaInput) { toast("Pilih siswa terlebih dahulu", "error"); return; }
+  const jenis = document.getElementById("inp-jenis").value;
+  const kategori = document.getElementById("inp-kategori").value;
+  const poin = parseInt(document.getElementById("inp-poin").value);
+  const guru = document.getElementById("inp-guru").value || state.guru || "Guru";
+  if (!jenis) { toast("Pilih jenis pelanggaran", "error"); return; }
+  if (!poin || poin < 1) { toast("Masukkan poin yang valid", "error"); return; }
+
+  const btn = document.getElementById("btn-simpan");
+  btn.disabled = true; btn.textContent = "Menyimpan...";
+
+  const res = await api({
+    action: "tambahPelanggaran",
+    nisn: state.siswaInput.nisn,
+    nama: state.siswaInput.nama,
+    kelas: state.siswaInput.kelas,
+    kategori, jenisPelanggaran: jenis, poin, dicatatOleh: guru
+  });
+
+  btn.disabled = false; btn.textContent = "💾 Simpan Pelanggaran";
+
+  if (res?.success) {
+    toast("Pelanggaran berhasil dicatat!", "success");
+    // Reset form
+    state.siswaInput = null;
+    document.getElementById("cari-siswa").value = "";
+    document.getElementById("siswa-terpilih").style.display = "none";
+    document.getElementById("inp-kategori").value = "";
+    document.getElementById("inp-jenis").innerHTML = '<option value="">– Pilih Jenis –</option>';
+    document.getElementById("inp-poin").value = "";
+    await muatData();
+  } else {
+    toast(res?.message || "Gagal menyimpan", "error");
+  }
+}
+
+// ============================================================
+// DATA IMPORT - KELAS 11 SWISS
+// ============================================================
+const DATA_IMPORT_SISWA = [
+  { nisn: "0092885356", nis: "214452", nama: "AFIFA MELISA",                      kelas: "XI SWISS", lp: "P" },
+  { nisn: "0094673552", nis: "214453", nama: "AHMAD FAUZUL QIRAMI",               kelas: "XI SWISS", lp: "L" },
+  { nisn: "3092089175", nis: "214959", nama: "ANGGUN MIRANDA",                    kelas: "XI SWISS", lp: "P" },
+  { nisn: "0097162052", nis: "214454", nama: "ARIQAH MAULIDIAH",                  kelas: "XI SWISS", lp: "P" },
+  { nisn: "0094196847", nis: "214455", nama: "ATEQAH MAULIDIAH",                  kelas: "XI SWISS", lp: "P" },
+  { nisn: "3095055133", nis: "214456", nama: "AURA ARZILLA",                      kelas: "XI SWISS", lp: "P" },
+  { nisn: "0092505088", nis: "214457", nama: "CUT AIRA FARIKA",                   kelas: "XI SWISS", lp: "P" },
+  { nisn: "0093924112", nis: "214458", nama: "CUT SIFA ZAMITA",                   kelas: "XI SWISS", lp: "P" },
+  { nisn: "0093426198", nis: "214459", nama: "FAHREL ALVARINDRA",                 kelas: "XI SWISS", lp: "L" },
+  { nisn: "0095588269", nis: "214460", nama: "FEBRI SALSABILA",                   kelas: "XI SWISS", lp: "P" },
+  { nisn: "0096272865", nis: "214461", nama: "IKRAM MAULANA",                     kelas: "XI SWISS", lp: "L" },
+  { nisn: "0106743654", nis: "214462", nama: "KHAIRIZA AYUMI DENANG RINUNATE",    kelas: "XI SWISS", lp: "P" },
+  { nisn: "0096263720", nis: "214463", nama: "M. FAIRUZ ALFATHAN",                kelas: "XI SWISS", lp: "L" },
+  { nisn: "0092206363", nis: "214464", nama: "M. FATHIR AT TASLIMI",              kelas: "XI SWISS", lp: "L" },
+  { nisn: "0099976091", nis: "214465", nama: "MIFTAHUL JANNAH",                   kelas: "XI SWISS", lp: "P" },
+  { nisn: "0098126823", nis: "214467", nama: "MUHAMMAD RAFI AZKA",                kelas: "XI SWISS", lp: "L" },
+  { nisn: "3096486947", nis: "214468", nama: "MUHAMMAD RAJUL FUZARI",             kelas: "XI SWISS", lp: "L" },
+  { nisn: "0097381985", nis: "214469", nama: "MUHAMMAD RAKHA",                    kelas: "XI SWISS", lp: "L" },
+  { nisn: "0097980429", nis: "214700", nama: "MUHAMMAD REYHAN",                   kelas: "XI SWISS", lp: "L" },
+  { nisn: "3097972249", nis: "214470", nama: "MUHAMMAD ZAGHLUL RIZKY HASIBUAN",   kelas: "XI SWISS", lp: "L" },
+  { nisn: "0095376349", nis: "214471", nama: "NATASHA AURELDA",                   kelas: "XI SWISS", lp: "P" },
+  { nisn: "0094288383", nis: "214472", nama: "NISAK RUSYIDA",                     kelas: "XI SWISS", lp: "P" },
+  { nisn: "0094297987", nis: "214473", nama: "NURUL NASWA",                       kelas: "XI SWISS", lp: "P" },
+  { nisn: "0081968125", nis: "214958", nama: "PUTRI BALQIS",                      kelas: "XI SWISS", lp: "P" },
+  { nisn: "0095642909", nis: "214474", nama: "RAISYA NABILA KALANI GINTING",      kelas: "XI SWISS", lp: "P" },
+  { nisn: "0099307218", nis: "214475", nama: "RAJUNA AKBAR SAHPUTRA",             kelas: "XI SWISS", lp: "L" },
+  { nisn: "0096302353", nis: "214476", nama: "RIZKI MAULIZAR",                    kelas: "XI SWISS", lp: "L" },
+  { nisn: "1211730012", nis: "214477", nama: "SAHHIL RAZAQ",                      kelas: "XI SWISS", lp: "L" },
+  { nisn: "0089634297", nis: "214479", nama: "SALSABILA ILLIYIN",                 kelas: "XI SWISS", lp: "P" },
+  { nisn: "0099078485", nis: "214480", nama: "SYARIFAH AQILA",                    kelas: "XI SWISS", lp: "P" },
+  { nisn: "0091798755", nis: "214961", nama: "SYIFA MULIA RAMADHANI",             kelas: "XI SWISS", lp: "P" },
+  { nisn: "0099922454", nis: "214481", nama: "SYIFA NADILA",                      kelas: "XI SWISS", lp: "P" },
+  { nisn: "0097354580", nis: "214482", nama: "THALITA SAKHIE",                    kelas: "XI SWISS", lp: "P" },
+  { nisn: "0095811664", nis: "214483", nama: "TUANKU HANIF MAULANA",              kelas: "XI SWISS", lp: "L" },
+  { nisn: "",           nis: "",       nama: "GENTA ARAFAH",                      kelas: "XI SWISS", lp: "L" },
+];
+
+// ============================================================
+// IMPORT FUNCTIONS
+// ============================================================
+function bukaModalImport() {
+  const tbody = document.getElementById("tbl-import");
+  // Tandai siswa yang sudah ada
+  const nisnAda = new Set(state.siswa.map(s => s.nisn));
+  tbody.innerHTML = DATA_IMPORT_SISWA.map((s, i) => {
+    const sudahAda = s.nisn && nisnAda.has(s.nisn);
+    return `<tr style="${sudahAda ? 'opacity:0.45;' : ''}">
+      <td style="padding:8px 12px;">
+        <input type="checkbox" class="chk-siswa" data-idx="${i}" ${sudahAda ? 'disabled' : 'checked'} onchange="updateImportCount()">
+      </td>
+      <td style="padding:8px 12px;font-weight:500;">${esc(s.nama)} ${sudahAda ? '<span style="font-size:10px;background:#E1F5EE;color:#0F6E56;padding:1px 6px;border-radius:10px;margin-left:4px;">✓ Ada</span>' : ''}</td>
+      <td style="padding:8px 12px;font-size:12px;color:var(--text-muted);">${s.nisn || '–'}</td>
+      <td style="padding:8px 12px;">${esc(s.kelas)}</td>
+      <td style="padding:8px 12px;">${s.lp}</td>
+    </tr>`;
+  }).join("");
+
+  document.getElementById("chk-semua").checked = true;
+  updateImportCount();
+  document.getElementById("import-progress").style.display = "none";
+  document.getElementById("btn-import").disabled = false;
+  document.getElementById("btn-import").textContent = "📥 Import ke Google Sheet";
+  bukaModal("modal-import");
+}
+
+function toggleSemuaSiswa(checked) {
+  document.querySelectorAll(".chk-siswa:not(:disabled)").forEach(c => c.checked = checked);
+  updateImportCount();
+}
+
+function updateImportCount() {
+  const n = document.querySelectorAll(".chk-siswa:checked").length;
+  document.getElementById("import-count").textContent = n + " dipilih";
+}
+
+async function jalankanImport() {
+  const dipilih = [];
+  document.querySelectorAll(".chk-siswa:checked").forEach(c => {
+    dipilih.push(DATA_IMPORT_SISWA[parseInt(c.dataset.idx)]);
+  });
+  if (!dipilih.length) { toast("Pilih minimal 1 siswa", "error"); return; }
+
+  const btn = document.getElementById("btn-import");
+  btn.disabled = true;
+  btn.textContent = "Mengimpor...";
+  document.getElementById("import-progress").style.display = "block";
+
+  let berhasil = 0, gagal = 0;
+  for (let i = 0; i < dipilih.length; i++) {
+    const s = dipilih[i];
+    const nisn = s.nisn || ("GENTA_" + Date.now()); // fallback jika nisn kosong
+    const res = await api({ action: "tambahSiswa", nisn, nama: s.nama, kelas: s.kelas });
+    if (res?.success) berhasil++;
+    else gagal++;
+
+    const pct = Math.round(((i + 1) / dipilih.length) * 100);
+    document.getElementById("import-bar").style.width = pct + "%";
+    document.getElementById("import-status").textContent = `Mengimpor ${i + 1} dari ${dipilih.length}... (${berhasil} berhasil${gagal ? ", " + gagal + " gagal" : ""})`;
+  }
+
+  await muatData();
+  tutupModal("modal-import");
+  toast(`Import selesai! ${berhasil} siswa berhasil ditambahkan${gagal ? ", " + gagal + " gagal" : ""}.`, berhasil > 0 ? "success" : "error");
+}
+
+// ============================================================
+// CRUD SISWA
+// ============================================================
+function bukaModalTambahSiswa() {
+  document.getElementById("m-nisn").value = "";
+  document.getElementById("m-nama").value = "";
+  document.getElementById("m-kelas").value = "";
+  bukaModal("modal-siswa");
+}
+
+async function simpanSiswa() {
+  const nisn = document.getElementById("m-nisn").value.trim();
+  const nama = document.getElementById("m-nama").value.trim();
+  const kelas = document.getElementById("m-kelas").value.trim();
+  if (!nisn || !nama || !kelas) { toast("Lengkapi semua field", "error"); return; }
+  const res = await api({ action: "tambahSiswa", nisn, nama, kelas });
+  if (res?.success) {
+    toast("Siswa berhasil ditambahkan", "success");
+    tutupModal("modal-siswa");
+    await muatData();
+  } else {
+    toast(res?.message || "Gagal", "error");
+  }
+}
+
+async function hapusSiswaFn(nisn, nama) {
+  if (!confirm(`Hapus siswa ${nama}? Data pelanggaran di Google Sheet tidak ikut terhapus.`)) return;
+  const res = await api({ action: "hapusSiswa", nisn });
+  if (res?.success) { toast("Siswa dihapus", "success"); await muatData(); }
+  else toast(res?.message || "Gagal", "error");
+}
+
+async function lihatRiwayatSiswa(nisn, nama) {
+  document.getElementById("modal-riwayat-judul").textContent = "Riwayat: " + nama;
+  document.getElementById("modal-riwayat-isi").innerHTML = '<div class="loading"><div class="spinner"></div> Memuat...</div>';
+  bukaModal("modal-riwayat-siswa");
+  const res = await api({ action: "getPelanggaran", nisn });
+  if (!res?.success) { document.getElementById("modal-riwayat-isi").innerHTML = '<p style="color:var(--danger);padding:1rem;">Gagal memuat data.</p>'; return; }
+  const data = res.data.reverse();
+  if (!data.length) { document.getElementById("modal-riwayat-isi").innerHTML = '<div class="empty">Belum ada pelanggaran tercatat.</div>'; return; }
+
+  const siswa = state.siswa.find(s => s.nisn === nisn);
+  const sk = siswa ? getSanksi(siswa.totalPoin) : null;
+
+  document.getElementById("modal-riwayat-isi").innerHTML = `
+    ${siswa ? `<div style="background:var(--primary-light);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;">
+      <div><strong>Total Poin: ${siswa.totalPoin}</strong></div>
+      <span class="badge ${sk.kelas}">${sk.label}</span>
+    </div>` : ""}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Waktu</th><th>Pelanggaran</th><th>Poin</th></tr></thead>
+        <tbody>${data.map(p => `<tr>
+          <td class="text-sm">${formatTgl(p.timestamp)}</td>
+          <td><div>${esc(p.jenisPelanggaran)}</div><div class="text-sm">${esc(p.kategori)}</div></td>
+          <td><span class="${poinClass(p.poin)}">${p.poin}</span></td>
+        </tr>`).join("")}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+async function hapusPelanggaranFn(rowIndex) {
+  if (!confirm("Hapus data pelanggaran ini? Poin siswa akan dikurangi.")) return;
+  const res = await api({ action: "hapusPelanggaran", rowIndex });
+  if (res?.success) { toast("Pelanggaran dihapus", "success"); await muatData(); }
+  else toast(res?.message || "Gagal", "error");
+}
+
+// ============================================================
+// SETTINGS
+// ============================================================
+function bukaSettings() {
+  document.getElementById("s-url").value = state.apiUrl || "";
+  document.getElementById("s-sekolah").value = localStorage.getItem("namaSekolah") || "";
+  bukaModal("modal-settings");
+}
+
+function simpanSettings() {
+  const url = document.getElementById("s-url").value.trim();
+  const sekolah = document.getElementById("s-sekolah").value.trim();
+  if (!url) { toast("URL tidak boleh kosong", "error"); return; }
+  state.apiUrl = url;
+  localStorage.setItem("apiUrl", url);
+  localStorage.setItem("namaSekolah", sekolah);
+  if (sekolah) document.querySelector(".header-sub").textContent = sekolah;
+  tutupModal("modal-settings");
+  toast("Pengaturan disimpan. Memuat data...", "success");
+  muatData();
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function bukaModal(id) { document.getElementById(id).classList.add("open"); }
+function tutupModal(id) { document.getElementById(id).classList.remove("open"); }
+function esc(s) { return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function formatTgl(t) { return t ? String(t).split(".")[0] : "–"; }
+
+function showLoading(id) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = '<tr><td colspan="10"><div class="loading"><div class="spinner"></div> Memuat data...</div></td></tr>';
+}
+
+function toast(msg, type = "") {
+  const el = document.createElement("div");
+  el.className = "toast " + type;
+  el.textContent = msg;
+  document.getElementById("toast-container").appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// Tutup autocomplete saat klik di luar
+document.addEventListener("click", e => {
+  if (!e.target.closest("#cari-siswa") && !e.target.closest("#autocomplete")) {
+    document.getElementById("autocomplete").style.display = "none";
+  }
+});
+</script>
+</body>
+</html>
