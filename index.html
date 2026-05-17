@@ -191,7 +191,6 @@ tbody tr:hover td{background:#F8FAFF}
 .rvc-m{font-size:11px;color:var(--tm);margin-top:5px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .date-box{display:flex;flex-direction:column;gap:2px}
 .date-main{font-size:13px;font-weight:600;color:var(--t)}
-.date-time{font-size:11px;color:var(--ts)}
 
 /* ── SISWA HERO ── */
 .sv-hero{background:linear-gradient(145deg,#1E1B4B 0%,#3730A3 30%,#4F46E5 60%,#7C3AED 100%);border-radius:var(--rad);padding:2.5rem 2rem;text-align:center;color:#fff;margin-bottom:1.25rem;position:relative;overflow:hidden;box-shadow:0 12px 40px rgba(79,70,229,.3)}
@@ -749,7 +748,7 @@ function renderTop(){
       <td><span class="kls-badge">${esc(s.kelas)}</span></td>
       <td>${pp(s.totalPoin)}</td>
       <td><span class="bdg ${skk.c}">${skk.l}</span></td>
-      <td><div class="date-box"><div class="date-main">📅 ${d}</div><div class="date-time">${w}</div></div></td>
+      <td><div class="date-main">📅 ${d}</div></td>
     </tr>`;
   }).join("");
 }
@@ -835,7 +834,7 @@ async function tampilSiswa(){
         <div class="rvc-j">${esc(p.jenisPelanggaran)}</div>
         <div class="rvc-m">
           <span style="background:#F3F4F6;color:var(--tm);padding:1px 7px;border-radius:4px;font-size:11px;font-weight:600">${esc(p.kategori)}</span>
-          <span style="font-size:11px;color:var(--ts)">📅 ${d}${w?" · "+w:""}</span>
+          <span style="font-size:11px;color:var(--ts)">📅 ${d}</span>
         </div>
       </div>
       <div>${pp(p.poin)}</div>
@@ -954,7 +953,7 @@ async function lihatRwyt(nisn,nama){
         <div class="rvc-j">${esc(p.jenisPelanggaran)}</div>
         <div class="rvc-m">
           <span style="background:#F3F4F6;color:var(--tm);padding:1px 7px;border-radius:4px;font-size:11px;font-weight:600">${esc(p.kategori)}</span>
-          <span style="font-size:11px;color:var(--ts)">📅 ${d}${w?" · "+w:""}</span>
+          <span style="font-size:11px;color:var(--ts)">📅 ${d}</span>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
