@@ -5,388 +5,433 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>e-Disiplin · SMAN 2 Banda Aceh</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --p:#4F46E5;--pd:#3730A3;--pl:#EEF2FF;
-  --s:#059669;--sl:#D1FAE5;
+  --p:#4F46E5;--pd:#3730A3;--pl:#EEF2FF;--p2:#818CF8;
+  --s:#059669;--sl:#D1FAE5;--sd:#065F46;
   --w:#D97706;--wl:#FEF3C7;
   --r:#DC2626;--rl:#FEE2E2;
   --i:#2563EB;--il:#DBEAFE;
   --o:#EA580C;--ol:#FFEDD5;
-  --t:#111827;--tm:#6B7280;--ts:#9CA3AF;
-  --bg:#EEF2FF;--card:#FFFFFF;--card2:#F9FAFB;
-  --br:rgba(0,0,0,0.08);
-  --rad:14px;--rad-s:8px;--rad-xs:6px;
-  --sh:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
-  --sh2:0 8px 24px rgba(0,0,0,0.12);
+  --t:#0F172A;--tm:#64748B;--ts:#94A3B8;
+  --bg:#F1F5FF;--card:#FFFFFF;--card2:#F8FAFC;
+  --br:#E2E8F0;
+  --rad:16px;--rad-s:10px;--rad-xs:7px;
+  --sh:0 1px 3px rgba(15,23,42,.06),0 4px 12px rgba(15,23,42,.04);
+  --sh2:0 8px 32px rgba(15,23,42,.12);
+  --sh3:0 20px 60px rgba(79,70,229,.2);
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background-color:#EEF2FF;background-image:radial-gradient(circle at 1px 1px,rgba(79,70,229,0.13) 1px,transparent 0);background-size:28px 28px;color:var(--t);min-height:100vh;font-size:14px;line-height:1.5}
+body{font-family:'Inter',system-ui,sans-serif;background:#F1F5FF;background-image:
+  radial-gradient(circle at 1px 1px,rgba(79,70,229,0.1) 1px,transparent 0);
+  background-size:24px 24px;
+  color:var(--t);min-height:100vh;font-size:14px;line-height:1.6}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:3px}
+::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:99px}
 
-/* LOGIN */
+/* ── LOGIN ─────────────────────────────── */
 #login-screen{position:fixed;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;padding:1rem;
-  background:linear-gradient(135deg,#1E1B4B 0%,#312E81 25%,#4F46E5 55%,#7C3AED 80%,#6D28D9 100%);background-image:linear-gradient(135deg,#1E1B4B 0%,#312E81 25%,#4F46E5 55%,#7C3AED 80%,#6D28D9 100%),radial-gradient(ellipse at 20% 50%,rgba(167,139,250,0.3) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(99,102,241,0.4) 0%,transparent 50%),radial-gradient(ellipse at 60% 80%,rgba(139,92,246,0.35) 0%,transparent 55%)}
-.lcard{background:#fff;border-radius:20px;width:100%;max-width:400px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.3)}
-.lhead{padding:2rem 1.5rem 2.5rem;text-align:center;background:linear-gradient(135deg,#4F46E5,#7C3AED);position:relative}
-.lhead::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:24px;background:#fff;border-radius:60% 60% 0 0/100% 100% 0 0}
-.llogo{font-size:42px;margin-bottom:10px;display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3))}
-.ltitle{color:#fff;font-size:21px;font-weight:800;letter-spacing:-.5px}
-.lsub{color:rgba(255,255,255,.7);font-size:12px;margin-top:4px}
-.lbody{padding:1.5rem}
-.mtabs{display:grid;grid-template-columns:1fr 1fr;background:#F3F4F6;border-radius:var(--rad-s);padding:4px;margin-bottom:1.25rem;gap:3px}
-.mtab{padding:10px;border:none;background:none;border-radius:var(--rad-xs);cursor:pointer;font-size:13px;font-weight:500;color:var(--tm);transition:all .2s}
-.mtab.active{background:#fff;color:var(--p);box-shadow:0 2px 6px rgba(0,0,0,.1);font-weight:700}
+  background:linear-gradient(145deg,#0F0C29 0%,#302B63 45%,#24243E 100%)}
+#login-screen::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 20% 50%,rgba(124,58,237,.35) 0%,transparent 55%),
+             radial-gradient(ellipse at 80% 10%,rgba(79,70,229,.4) 0%,transparent 50%),
+             radial-gradient(ellipse at 60% 90%,rgba(139,92,246,.3) 0%,transparent 50%);
+  pointer-events:none}
+.lring{position:absolute;border-radius:50%;border:1px solid rgba(167,139,250,.2);pointer-events:none}
+.lcard{background:rgba(255,255,255,.97);backdrop-filter:blur(20px);border-radius:24px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.1);position:relative;z-index:1}
+.lhead{padding:2.25rem 2rem 3rem;text-align:center;background:linear-gradient(145deg,#3730A3,#4F46E5 40%,#7C3AED);position:relative;overflow:hidden}
+.lhead::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.07)}
+.lhead::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:28px;background:rgba(255,255,255,.97);border-radius:60% 60% 0 0/100% 100% 0 0}
+.llogo-wrap{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;background:rgba(255,255,255,.2);border-radius:18px;margin-bottom:14px;font-size:30px;border:1.5px solid rgba(255,255,255,.3);backdrop-filter:blur(10px)}
+.ltitle{color:#fff;font-size:22px;font-weight:800;letter-spacing:-.6px}
+.lsub{color:rgba(255,255,255,.65);font-size:12px;margin-top:5px;letter-spacing:.2px}
+.lbody{padding:1.75rem 2rem 2rem}
+.mtabs{display:grid;grid-template-columns:1fr 1fr;background:#F1F5F9;border-radius:var(--rad-s);padding:4px;margin-bottom:1.5rem;gap:3px}
+.mtab{padding:10px 8px;border:none;background:none;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;color:var(--tm);transition:all .2s;letter-spacing:-.1px}
+.mtab.active{background:#fff;color:var(--p);box-shadow:0 2px 8px rgba(79,70,229,.15);font-weight:700}
+.linp{width:100%;padding:11px 14px;border:1.5px solid var(--br);border-radius:var(--rad-xs);font-size:13px;font-family:'Inter',sans-serif;background:#fff;color:var(--t);outline:none;transition:all .2s;margin-top:6px}
+.linp:focus{border-color:var(--p);box-shadow:0 0 0 4px rgba(79,70,229,.1)}
+.llabel{font-size:11px;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.6px}
+.lbtn{width:100%;padding:12px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border:none;border-radius:var(--rad-xs);font-size:14px;font-weight:700;cursor:pointer;margin-top:1.25rem;letter-spacing:-.1px;transition:all .2s;font-family:'Inter',sans-serif}
+.lbtn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(79,70,229,.4)}
+.lerr{color:var(--r);font-size:12px;margin-top:6px;font-weight:500;display:none;padding:8px 12px;background:var(--rl);border-radius:var(--rad-xs)}
 
-/* HEADER */
-.hdr{background:#fff;border-bottom:1px solid var(--br);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:62px;position:sticky;top:0;z-index:100;box-shadow:0 1px 6px rgba(0,0,0,0.06)}
-.hdr-brand{display:flex;align-items:center;gap:12px}
-.hdr-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--p),#7C3AED);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 8px rgba(79,70,229,.3)}
-.hdr-title{font-size:15px;font-weight:800;color:var(--t);letter-spacing:-.4px}
-.hdr-sub{font-size:11px;color:var(--tm);margin-top:1px}
-.hdr-right{display:flex;align-items:center;gap:8px}
-.rbadge{display:inline-flex;align-items:center;gap:5px;background:var(--pl);color:var(--p);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid rgba(79,70,229,.2)}
-.rbadge.siswa{background:#F0FDF4;color:var(--s);border-color:rgba(5,150,105,.2)}
-.hbtn{background:var(--card2);border:1px solid var(--br);color:var(--tm);padding:7px 14px;border-radius:var(--rad-xs);cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;display:flex;align-items:center;gap:5px}
-.hbtn:hover{background:#E5E7EB;color:var(--t)}
-.hbtn.logout{background:#FEF2F2;color:var(--r);border-color:rgba(220,38,38,.2)}
-.hbtn.logout:hover{background:#FEE2E2}
+/* ── APP SHELL ─────────────────────────── */
+.app-wrap{display:flex;flex-direction:column;min-height:100vh}
 
-/* NAV */
-.nav{background:#fff;border-bottom:1px solid var(--br);display:flex;padding:0 1.25rem;overflow-x:auto}
+/* ── TOP BAR ── */
+.topbar{background:#fff;border-bottom:1px solid var(--br);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 1px 0 var(--br),0 4px 16px rgba(15,23,42,.04)}
+.tb-brand{display:flex;align-items:center;gap:12px}
+.tb-icon{width:40px;height:40px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(79,70,229,.35);flex-shrink:0}
+.tb-name{font-size:15px;font-weight:800;color:var(--t);letter-spacing:-.4px;line-height:1.2}
+.tb-school{font-size:11px;color:var(--tm);font-weight:500}
+.tb-right{display:flex;align-items:center;gap:10px}
+.rb{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:99px;font-size:12px;font-weight:700;letter-spacing:-.1px}
+.rb-guru{background:var(--pl);color:var(--p);border:1.5px solid rgba(79,70,229,.2)}
+.rb-siswa{background:#F0FDF4;color:var(--sd);border:1.5px solid rgba(5,150,105,.2)}
+.tbbtn{background:var(--card2);border:1px solid var(--br);color:var(--tm);padding:7px 14px;border-radius:var(--rad-xs);cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;display:flex;align-items:center;gap:5px;font-family:'Inter',sans-serif}
+.tbbtn:hover{background:#F1F5F9;color:var(--t)}
+.tbbtn.out{background:#FEF2F2;color:var(--r);border-color:rgba(220,38,38,.2)}
+.tbbtn.out:hover{background:#FEE2E2}
+
+/* ── NAV ── */
+.nav{background:#fff;border-bottom:1px solid var(--br);display:flex;padding:0 1.5rem;overflow-x:auto;gap:2px}
 .nav::-webkit-scrollbar{height:0}
-.nb{padding:14px 18px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:500;color:var(--tm);border-bottom:2.5px solid transparent;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.nb{padding:14px 18px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:500;color:var(--tm);border-bottom:2.5px solid transparent;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:7px;letter-spacing:-.1px;font-family:'Inter',sans-serif}
 .nb.active{color:var(--p);border-bottom-color:var(--p);font-weight:700}
-.nb:hover:not(.active){color:var(--t);background:#F9FAFB}
+.nb:hover:not(.active){color:var(--t);background:#F8FAFC;border-radius:8px 8px 0 0}
+.nacbar{height:3px;background:linear-gradient(90deg,#4F46E5,#7C3AED,#6366F1,#4F46E5);background-size:200% 100%;animation:nacmov 4s linear infinite}
+@keyframes nacmov{0%{background-position:0% 0}100%{background-position:200% 0}}
 
-/* MAIN */
-.main{max-width:980px;margin:0 auto;padding:1.5rem}
+/* ── MAIN ── */
+.main{flex:1;max-width:1040px;margin:0 auto;padding:1.75rem 1.5rem;width:100%}
 
-/* STAT CARDS */
-.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:1.5rem}
-.sc{background:#fff;border:1px solid var(--br);border-radius:var(--rad);padding:1.25rem;box-shadow:var(--sh);display:flex;align-items:center;gap:14px;transition:box-shadow .2s}
-.sc:hover{box-shadow:var(--sh2)}
-.sc-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.sc-val{font-size:28px;font-weight:800;line-height:1;letter-spacing:-1px}
-.sc-lbl{font-size:12px;color:var(--tm);margin-top:3px;font-weight:500}
+/* ── STAT CARDS ── */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:1.75rem}
+.sc{background:#fff;border:1px solid var(--br);border-radius:var(--rad);padding:1.25rem 1.5rem;box-shadow:var(--sh);display:flex;align-items:center;gap:16px;transition:all .2s;position:relative;overflow:hidden}
+.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--rad) var(--rad) 0 0}
+.sc.blue::after{background:linear-gradient(90deg,#2563EB,#60A5FA)}
+.sc.red::after{background:linear-gradient(90deg,#DC2626,#F87171)}
+.sc.amber::after{background:linear-gradient(90deg,#D97706,#FBB849)}
+.sc.purple::after{background:linear-gradient(90deg,#4F46E5,#A78BFA)}
+.sc:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
+.sc-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
 .sc.blue .sc-icon{background:var(--il)}.sc.blue .sc-val{color:var(--i)}
 .sc.red .sc-icon{background:var(--rl)}.sc.red .sc-val{color:var(--r)}
 .sc.amber .sc-icon{background:var(--wl)}.sc.amber .sc-val{color:var(--w)}
 .sc.purple .sc-icon{background:var(--pl)}.sc.purple .sc-val{color:var(--p)}
+.sc-val{font-size:30px;font-weight:900;line-height:1;letter-spacing:-1.5px}
+.sc-lbl{font-size:12px;color:var(--tm);margin-top:4px;font-weight:500}
 
-/* PANEL */
+/* ── PANEL ── */
 .pnl{background:#fff;border:1px solid var(--br);border-radius:var(--rad);margin-bottom:1.25rem;overflow:hidden;box-shadow:var(--sh)}
-.pnl-hdr{padding:1rem 1.25rem;border-bottom:1px solid #F3F4F6;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.pnl-title{font-size:14px;font-weight:700;color:var(--t);display:flex;align-items:center;gap:7px}
-.pnl-body{padding:1.25rem}
+.pnl-hdr{padding:1.1rem 1.5rem;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;background:linear-gradient(135deg,#FAFBFF,#F8FAFC)}
+.pnl-title{font-size:14px;font-weight:700;color:var(--t);display:flex;align-items:center;gap:8px;letter-spacing:-.2px}
+.pnl-body{padding:1.5rem}
 
-/* FORM */
-.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
-.fg label{font-size:11px;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.5px}
-input,select{width:100%;padding:10px 13px;border:1.5px solid #E5E7EB;border-radius:var(--rad-xs);font-size:13px;background:#fff;color:var(--t);outline:none;transition:all .15s}
-input:focus,select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+/* ── FORM ── */
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.fg label{font-size:11px;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.6px}
+input,select{width:100%;padding:10px 14px;border:1.5px solid var(--br);border-radius:var(--rad-xs);font-size:13px;background:#fff;color:var(--t);outline:none;transition:all .2s;font-family:'Inter',sans-serif}
+input:focus,select:focus{border-color:var(--p);box-shadow:0 0 0 4px rgba(79,70,229,.1);background:#FAFBFF}
 select option{background:#fff}
-.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
 
-/* BUTTONS */
-.btn{padding:9px 18px;border:none;border-radius:var(--rad-xs);cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
-.bp{background:linear-gradient(135deg,var(--p),#7C3AED);color:#fff;box-shadow:0 2px 8px rgba(79,70,229,.3)}
-.bp:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(79,70,229,.4)}
-.bg{background:var(--sl);color:var(--s);border:1.5px solid rgba(5,150,105,.2)}
+/* ── BUTTONS ── */
+.btn{padding:9px 18px;border:none;border-radius:var(--rad-xs);cursor:pointer;font-size:13px;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:6px;letter-spacing:-.1px;font-family:'Inter',sans-serif}
+.bp{background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;box-shadow:0 2px 10px rgba(79,70,229,.3)}
+.bp:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(79,70,229,.4)}
+.bg2b{background:linear-gradient(135deg,#059669,#10B981);color:#fff;box-shadow:0 2px 8px rgba(5,150,105,.25)}
+.bg2b:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(5,150,105,.35)}
+.bg{background:var(--sl);color:var(--sd);border:1.5px solid rgba(5,150,105,.25)}
 .bg:hover{background:#A7F3D0}
 .br2{background:var(--rl);color:var(--r);border:1.5px solid rgba(220,38,38,.2)}
 .br2:hover{background:#FECACA}
 .bo{background:var(--card2);color:var(--tm);border:1.5px solid var(--br)}
-.bo:hover{background:#E5E7EB;color:var(--t)}
-.bsm{padding:5px 11px;font-size:12px}
+.bo:hover{background:#F1F5F9;color:var(--t)}
+.bsm{padding:5px 12px;font-size:12px}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none!important}
 
-/* TABLE */
+/* ── SEARCH BAR ── */
+.sbar{display:flex;gap:10px;margin-bottom:1.25rem;align-items:center}
+.sbar input{flex:1}
+.sbar-wrap{background:var(--card2);border-radius:var(--rad-s);padding:1rem 1.5rem;border-bottom:1px solid var(--br)}
+
+/* ── TABLE ── */
 .tw{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
-thead tr{background:#F8FAFC;border-bottom:2px solid #E5E7EB}
-th{padding:11px 14px;font-size:11px;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;text-align:left}
-td{padding:12px 14px;border-bottom:1px solid #F3F4F6;vertical-align:middle}
+thead tr{background:linear-gradient(135deg,#F8FAFC,#F1F5F9);border-bottom:2px solid var(--br)}
+th{padding:12px 16px;font-size:10.5px;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;text-align:left}
+td{padding:13px 16px;border-bottom:1px solid #F8FAFC;vertical-align:middle}
 tr:last-child td{border-bottom:none}
-tbody tr{transition:background .1s}
-tbody tr:hover td{background:#FAFAFA}
+tbody tr{transition:background .12s}
+tbody tr:hover td{background:#F8FAFF}
 
-/* BADGES */
-.bdg{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
-.bg2{background:var(--sl);color:var(--s)}
+/* ── BADGES ── */
+.bdg{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;white-space:nowrap;letter-spacing:-.1px}
+.bg2{background:var(--sl);color:var(--sd)}
 .bb{background:var(--il);color:var(--i)}
 .ba{background:var(--wl);color:var(--w)}
 .bor{background:var(--ol);color:var(--o)}
 .bd{background:var(--rl);color:var(--r)}
-.bdk{background:#1F2937;color:#F9FAFB}
+.bdk{background:#1E293B;color:#F8FAFC}
+.kls-badge{background:linear-gradient(135deg,#EEF2FF,#E0E7FF);color:var(--p);padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:-.1px;border:1px solid rgba(79,70,229,.15)}
 
-/* POIN PILL */
-.pp{display:inline-flex;align-items:center;justify-content:center;min-width:42px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700}
-.pp0{background:var(--sl);color:var(--s)}
+/* ── POIN PILL ── */
+.pp{display:inline-flex;align-items:center;justify-content:center;min-width:44px;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:800;letter-spacing:-.3px}
+.pp0{background:var(--sl);color:var(--sd)}
 .pp1{background:var(--il);color:var(--i)}
 .pp2{background:var(--wl);color:var(--w)}
 .pp3{background:var(--ol);color:var(--o)}
 .pp4{background:var(--rl);color:var(--r)}
-.pp5{background:#7F1D1D;color:#fff}
+.pp5{background:linear-gradient(135deg,#7F1D1D,#991B1B);color:#fff;box-shadow:0 2px 8px rgba(127,29,29,.3)}
 
-/* AUTOCOMPLETE */
-#autocomplete{background:#fff;border:1.5px solid #E5E7EB;border-radius:var(--rad-xs);margin-top:3px;display:none;max-height:200px;overflow-y:auto;box-shadow:var(--sh2);z-index:50;position:relative}
-.aci{padding:10px 14px;cursor:pointer;border-bottom:1px solid #F3F4F6;transition:background .1s}
+/* ── AUTOCOMPLETE ── */
+#autocomplete{background:#fff;border:1.5px solid var(--br);border-radius:var(--rad-xs);margin-top:4px;display:none;max-height:220px;overflow-y:auto;box-shadow:var(--sh2);z-index:50;position:relative}
+.aci{padding:11px 16px;cursor:pointer;border-bottom:1px solid #F8FAFC;transition:background .1s;display:flex;align-items:center;gap:10px}
 .aci:hover{background:var(--pl)}
 .aci:last-child{border-bottom:none}
+.aci-av{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--p),#7C3AED);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800;flex-shrink:0}
 .aci-n{font-weight:700;font-size:13px;color:var(--t)}
-.aci-i{font-size:11px;color:var(--tm);margin-top:2px}
+.aci-i{font-size:11px;color:var(--tm);margin-top:1px}
 
-/* SISWA TERPILIH */
-#siswa-terpilih{background:linear-gradient(135deg,#EEF2FF,#E0F2FE);border:1.5px solid rgba(79,70,229,.2);border-radius:var(--rad-s);padding:14px 16px;margin-top:10px;display:none}
-.stn{font-weight:800;font-size:15px;color:var(--p);margin-bottom:5px}
+/* ── SISWA TERPILIH ── */
+#siswa-terpilih{background:linear-gradient(135deg,#EEF2FF 0%,#E0E7FF 100%);border:1.5px solid rgba(79,70,229,.2);border-radius:var(--rad-s);padding:14px 18px;margin-top:10px;display:none;position:relative;overflow:hidden}
+#siswa-terpilih::before{content:'✓';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:32px;font-weight:900;color:rgba(79,70,229,.12)}
+.stn{font-weight:800;font-size:15px;color:var(--p);margin-bottom:5px;letter-spacing:-.3px}
 .sti{font-size:12px;color:var(--tm);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 
-/* RIWAYAT CARD */
-.rvc{background:#fff;border:1px solid var(--br);border-radius:var(--rad-s);padding:14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;transition:box-shadow .15s}
-.rvc:hover{box-shadow:var(--sh2)}
-.rvi{width:40px;height:40px;border-radius:var(--rad-xs);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:#F3F4F6}
+/* ── RIWAYAT CARD ── */
+.rvc{background:#fff;border:1px solid var(--br);border-radius:var(--rad-s);padding:14px 16px;margin-bottom:8px;display:flex;align-items:flex-start;gap:14px;transition:all .15s}
+.rvc:hover{box-shadow:var(--sh2);transform:translateY(-1px);border-color:rgba(79,70,229,.2)}
+.rvi{width:42px;height:42px;border-radius:var(--rad-xs);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:linear-gradient(135deg,#F1F5FF,#E0E7FF)}
 .rvc-body{flex:1;min-width:0}
-.rvc-j{font-weight:700;font-size:13px;color:var(--t)}
-.rvc-m{font-size:11px;color:var(--tm);margin-top:4px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.rvc-j{font-weight:700;font-size:13px;color:var(--t);letter-spacing:-.1px}
+.rvc-m{font-size:11px;color:var(--tm);margin-top:5px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .date-box{display:flex;flex-direction:column;gap:2px}
 .date-main{font-size:13px;font-weight:600;color:var(--t)}
 .date-time{font-size:11px;color:var(--ts)}
 
-/* SISWA HERO */
-.sv-hero{background:linear-gradient(135deg,#312E81 0%,#4F46E5 50%,#7C3AED 100%);border-radius:var(--rad);padding:2rem;text-align:center;color:#fff;margin-bottom:1.25rem;position:relative;overflow:hidden}
-.sv-hero::before{content:'';position:absolute;top:-50px;right:-50px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.07)}
-.sv-hero::after{content:'';position:absolute;bottom:-40px;left:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.05)}
-.sv-hw{font-size:13px;opacity:.75;margin-bottom:5px}
-.sv-nm{font-size:22px;font-weight:800;letter-spacing:-.4px}
-.sv-kl{font-size:13px;opacity:.7;margin-top:3px;margin-bottom:1.75rem}
-.sv-pw{display:inline-block;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);border-radius:var(--rad);padding:1.25rem 2.5rem;backdrop-filter:blur(10px)}
-.sv-pl{font-size:11px;opacity:.75;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
-.sv-pv{font-size:60px;font-weight:900;line-height:1;letter-spacing:-3px}
-.sv-sk{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.3);padding:6px 18px;border-radius:20px;font-size:13px;font-weight:700;margin-top:1rem}
-.sv-dc{font-size:12px;opacity:.65;margin-top:6px}
+/* ── SISWA HERO ── */
+.sv-hero{background:linear-gradient(145deg,#1E1B4B 0%,#3730A3 30%,#4F46E5 60%,#7C3AED 100%);border-radius:var(--rad);padding:2.5rem 2rem;text-align:center;color:#fff;margin-bottom:1.25rem;position:relative;overflow:hidden;box-shadow:0 12px 40px rgba(79,70,229,.3)}
+.sv-hero::before{content:'';position:absolute;top:-80px;right:-80px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.06)}
+.sv-hero::after{content:'';position:absolute;bottom:-60px;left:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.04)}
+.sv-hw{font-size:12px;opacity:.7;margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+.sv-nm{font-size:24px;font-weight:900;letter-spacing:-.6px;line-height:1.2}
+.sv-kl{font-size:13px;opacity:.65;margin-top:4px;margin-bottom:2rem;font-weight:500}
+.sv-pw{display:inline-block;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);border-radius:16px;padding:1.5rem 3rem;backdrop-filter:blur(10px)}
+.sv-pl{font-size:10px;opacity:.7;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;font-weight:600}
+.sv-pv{font-size:64px;font-weight:900;line-height:1;letter-spacing:-4px}
+.sv-sk{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.25);padding:7px 20px;border-radius:99px;font-size:13px;font-weight:700;margin-top:1.25rem;letter-spacing:-.1px}
+.sv-dc{font-size:12px;opacity:.6;margin-top:6px;font-weight:500}
 
-/* EMPTY */
-.empty{text-align:center;padding:3rem 1rem;color:var(--ts)}
-.ei{font-size:40px;margin-bottom:10px;opacity:.4}
-.et{font-size:14px}
+/* ── SECTION LABEL ── */
+.sec-label{font-size:11px;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--br)}
 
-/* MODAL */
-.mover{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px)}
-.mover.open{display:flex}
-.modal{background:#fff;border-radius:var(--rad);width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.2)}
-.mhdr{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid var(--br)}
-.mtitle{font-size:16px;font-weight:800}
-.mcls{background:none;border:none;font-size:24px;cursor:pointer;color:var(--tm);line-height:1;padding:2px 6px;border-radius:4px;transition:background .1s}
-.mcls:hover{background:var(--card2)}
-.mbody{padding:1.5rem}
+/* ── EMPTY ── */
+.empty{text-align:center;padding:3.5rem 1rem;color:var(--ts)}
+.ei{font-size:44px;margin-bottom:12px;opacity:.35;display:block}
+.et{font-size:14px;font-weight:500}
 
-/* TOAST */
+/* ── MODAL ── */
+.mover{display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:300;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
+.mover.open{display:flex;animation:mfade .2s ease}
+@keyframes mfade{from{opacity:0}to{opacity:1}}
+.modal{background:#fff;border-radius:20px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 32px 80px rgba(15,23,42,.25),0 0 0 1px rgba(0,0,0,.05)}
+.mhdr{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.75rem;border-bottom:1px solid var(--br);background:linear-gradient(135deg,#FAFBFF,#F8FAFC)}
+.mtitle{font-size:16px;font-weight:800;letter-spacing:-.4px}
+.mcls{background:none;border:none;font-size:22px;cursor:pointer;color:var(--tm);line-height:1;padding:4px 8px;border-radius:6px;transition:all .15s;font-family:'Inter',sans-serif}
+.mcls:hover{background:var(--rl);color:var(--r)}
+.mbody{padding:1.75rem}
+
+/* ── TOAST ── */
 .toasts{position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;display:flex;flex-direction:column;gap:8px}
-.toast{padding:12px 16px;border-radius:var(--rad-s);font-size:13px;font-weight:600;animation:tin .3s ease;max-width:320px;box-shadow:var(--sh2);display:flex;align-items:center;gap:8px;border-left:4px solid transparent}
-.toast{background:#1F2937;color:#fff;border-color:#4B5563}
-.toast.ok{background:#F0FDF4;color:#166534;border-color:var(--s)}
-.toast.err{background:#FEF2F2;color:#991B1B;border-color:var(--r)}
-@keyframes tin{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast{padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;animation:tin .3s cubic-bezier(.175,.885,.32,1.275);max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;border-left:4px solid transparent;letter-spacing:-.1px}
+.toast{background:#1E293B;color:#F8FAFC;border-color:#334155}
+.toast.ok{background:#F0FDF4;color:#166534;border-color:#059669}
+.toast.err{background:#FEF2F2;color:#991B1B;border-color:#DC2626}
+@keyframes tin{from{transform:translateX(120%) scale(.8);opacity:0}to{transform:translateX(0) scale(1);opacity:1}}
 
-/* LOADING */
-.ldg{display:flex;align-items:center;gap:10px;padding:2.5rem;color:var(--tm);justify-content:center;font-size:13px}
-.spin{width:18px;height:18px;border:2.5px solid #E5E7EB;border-top-color:var(--p);border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0}
+/* ── LOADING ── */
+.ldg{display:flex;align-items:center;gap:10px;padding:2.5rem;color:var(--tm);justify-content:center;font-size:13px;font-weight:500}
+.spin{width:20px;height:20px;border:2.5px solid #E2E8F0;border-top-color:var(--p);border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0}
 @keyframes sp{to{transform:rotate(360deg)}}
 
-/* MISC */
+/* ── MISC ── */
 .hidden{display:none!important}
-.fw7{font-weight:700}.fw8{font-weight:800}
+.fw7{font-weight:700}.fw8{font-weight:800}.fw9{font-weight:900}
 .flex{display:flex;align-items:center}
-.gap6{gap:6px}.gap8{gap:8px}
+.gap6{gap:6px}.gap8{gap:8px}.gap10{gap:10px}
 .mt1{margin-top:.75rem}.mt2{margin-top:1rem}
-.kls-badge{background:var(--pl);color:var(--p);padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700}
-.nisn-mono{font-size:12px;color:var(--tm);font-family:'Courier New',monospace}
+.nisn-mono{font-size:11px;color:var(--ts);font-family:'Courier New',monospace;margin-top:2px}
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
 <div id="login-screen">
-<!-- decorative shapes -->
-<div style="position:absolute;top:-80px;left:-80px;width:320px;height:320px;border-radius:50%;background:rgba(167,139,250,0.15);filter:blur(40px);pointer-events:none"></div>
-<div style="position:absolute;bottom:-60px;right:-60px;width:280px;height:280px;border-radius:50%;background:rgba(99,102,241,0.18);filter:blur(35px);pointer-events:none"></div>
-<div style="position:absolute;top:30%;left:5%;width:160px;height:160px;border-radius:50%;background:rgba(139,92,246,0.12);filter:blur(25px);pointer-events:none"></div>
-<div style="position:absolute;top:15%;right:8%;width:120px;height:120px;border-radius:50%;background:rgba(192,132,252,0.15);filter:blur(20px);pointer-events:none"></div>
-<!-- floating rings -->
-<div style="position:absolute;top:12%;left:12%;width:80px;height:80px;border-radius:50%;border:1.5px solid rgba(167,139,250,0.25);pointer-events:none;animation:floatA 6s ease-in-out infinite"></div>
-<div style="position:absolute;bottom:18%;right:14%;width:56px;height:56px;border-radius:50%;border:1.5px solid rgba(129,140,248,0.3);pointer-events:none;animation:floatB 8s ease-in-out infinite"></div>
-<div style="position:absolute;bottom:35%;left:8%;width:40px;height:40px;border-radius:50%;border:1px solid rgba(196,181,253,0.2);pointer-events:none;animation:floatA 7s ease-in-out infinite 1s"></div>
-<style>
-@keyframes floatA{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-14px) rotate(8deg)}}
-@keyframes floatB{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(10px) rotate(-6deg)}}
-</style>
-<div class="lcard">
-  <div class="lhead">
-    <span class="llogo">📋</span>
-    <div class="ltitle">e-Disiplin</div>
-    <div class="lsub">SMA Negeri 2 Banda Aceh</div>
-  </div>
-  <div class="lbody">
-    <div class="mtabs">
-      <button class="mtab active" id="tm-guru" onclick="gMode('guru')">🧑‍🏫 Guru</button>
-      <button class="mtab" id="tm-siswa" onclick="gMode('siswa')">🎓 Siswa</button>
+  <div class="lring" style="width:400px;height:400px;top:-10%;left:-10%;animation:floatA 8s ease-in-out infinite"></div>
+  <div class="lring" style="width:250px;height:250px;bottom:5%;right:-5%;animation:floatB 10s ease-in-out infinite"></div>
+  <div class="lring" style="width:120px;height:120px;top:20%;right:15%;animation:floatA 6s ease-in-out infinite 1s"></div>
+  <style>
+    @keyframes floatA{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(5deg)}}
+    @keyframes floatB{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(14px) rotate(-4deg)}}
+  </style>
+  <div class="lcard">
+    <div class="lhead">
+      <div class="llogo-wrap">📋</div>
+      <div class="ltitle">e-Disiplin</div>
+      <div class="lsub">SMA Negeri 2 Banda Aceh</div>
     </div>
-    <div id="fl-guru">
-      <div class="fg"><label>Nama Guru</label><input id="l-nama" placeholder="Masukkan nama Anda"></div>
-      <div class="fg mt1"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginGuru()"></div>
-      <div id="eg" style="color:var(--r);font-size:12px;margin:6px 0;display:none">❌ Password salah. Coba lagi.</div>
-      <button class="btn bp mt2" style="width:100%;justify-content:center" onclick="loginGuru()">Masuk sebagai Guru →</button>
+    <div class="lbody">
+      <div class="mtabs">
+        <button class="mtab active" id="tm-guru" onclick="gMode('guru')">🧑‍🏫 Guru</button>
+        <button class="mtab" id="tm-siswa" onclick="gMode('siswa')">🎓 Siswa</button>
+      </div>
+      <div id="fl-guru">
+        <div><div class="llabel">Nama Guru</div><input class="linp" id="l-nama" placeholder="Masukkan nama Anda"></div>
+        <div style="margin-top:12px"><div class="llabel">Password</div><input class="linp" type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginGuru()"></div>
+        <div class="lerr" id="eg">❌ Password salah. Coba lagi.</div>
+        <button class="lbtn" onclick="loginGuru()">Masuk sebagai Guru →</button>
+      </div>
+      <div id="fl-siswa" class="hidden">
+        <p style="font-size:13px;color:var(--tm);margin-bottom:14px;line-height:1.6">Masukkan <strong>NISN</strong> atau <strong>nama lengkap</strong> untuk melihat poin pelanggaran Anda.</p>
+        <div><div class="llabel">NISN atau Nama Lengkap</div><input class="linp" id="l-nisn" placeholder="cth: 0092885356 atau AFIFA MELISA" onkeydown="if(event.key==='Enter')loginSiswa()"></div>
+        <div class="lerr" id="es">❌ NISN / nama tidak ditemukan. Hubungi guru.</div>
+        <button class="lbtn" onclick="loginSiswa()">Lihat Poin Saya →</button>
+      </div>
+      <p style="font-size:11px;color:var(--ts);text-align:center;margin-top:1.25rem;font-weight:500">Hubungi admin jika mengalami kendala akses.</p>
     </div>
-    <div id="fl-siswa" class="hidden">
-      <p style="font-size:13px;color:var(--tm);margin-bottom:12px">Masukkan <strong>NISN</strong> atau <strong>nama lengkap</strong> untuk melihat poin Anda.</p>
-      <div class="fg"><label>NISN atau Nama Lengkap</label><input id="l-nisn" placeholder="cth: 0092885356 atau AFIFA MELISA" onkeydown="if(event.key==='Enter')loginSiswa()"></div>
-      <div id="es" style="color:var(--r);font-size:12px;margin:6px 0;display:none">❌ NISN / nama tidak ditemukan. Hubungi guru.</div>
-      <button class="btn bp mt2" style="width:100%;justify-content:center" onclick="loginSiswa()">Lihat Poin Saya →</button>
-    </div>
-    <p style="font-size:11px;color:var(--ts);text-align:center;margin-top:1rem">Hubungi admin jika mengalami kendala akses.</p>
-  </div>
-</div>
-</div>
-
-<!-- HEADER -->
-<div class="hdr">
-  <div class="hdr-brand">
-    <div class="hdr-icon">📋</div>
-    <div><div class="hdr-title">e-Disiplin</div><div class="hdr-sub">SMA Negeri 2 Banda Aceh</div></div>
-  </div>
-  <div class="hdr-right">
-    <span class="rbadge" id="rbadge">–</span>
-    <button class="hbtn" id="btn-cfg" onclick="bukaSettings()" style="display:none">⚙ Pengaturan</button>
-    <button class="hbtn logout" onclick="logout()">← Keluar</button>
   </div>
 </div>
 
-<!-- NAV -->
-<div class="nav">
-  <button class="nb active" id="tab-dashboard" onclick="tab('dashboard')">📊 Dashboard</button>
-  <button class="nb guru-only" id="tab-input" onclick="tab('input')">✏️ Input Pelanggaran</button>
-  <button class="nb guru-only" id="tab-siswa" onclick="tab('siswa')">👥 Data Siswa</button>
-  <button class="nb guru-only" id="tab-riwayat" onclick="tab('riwayat')">📋 Riwayat</button>
-  <button class="nb hidden" id="tab-siswa-view" onclick="tab('siswa-view')">🎓 Poin Saya</button>
-</div>
-
-<div style="height:3px;background:linear-gradient(90deg,#4F46E5,#7C3AED,#6366F1,#4F46E5);background-size:200% 100%;animation:gradMove 4s linear infinite"></div>
-<style>@keyframes gradMove{0%{background-position:0% 0}100%{background-position:200% 0}}</style>
-<div class="main">
-
-<!-- DASHBOARD -->
-<div id="page-dashboard">
-  <div class="sg">
-    <div class="sc blue"><div class="sc-icon">👥</div><div><div class="sc-val" id="st-t">–</div><div class="sc-lbl">Total Siswa</div></div></div>
-    <div class="sc red"><div class="sc-icon">⚠️</div><div><div class="sc-val" id="st-m">–</div><div class="sc-lbl">Poin Tertinggi</div></div></div>
-    <div class="sc amber"><div class="sc-icon">📋</div><div><div class="sc-val" id="st-p">–</div><div class="sc-lbl">Total Pelanggaran</div></div></div>
-    <div class="sc purple"><div class="sc-icon">🚨</div><div><div class="sc-val" id="st-k">–</div><div class="sc-lbl">Pembinaan IV+</div></div></div>
-  </div>
-  <div class="pnl">
-    <div class="pnl-hdr"><div class="pnl-title">🏆 Siswa Poin Tertinggi</div><span style="font-size:12px;color:var(--tm)">Top 10</span></div>
-    <div class="tw"><table>
-      <thead><tr><th>#</th><th>Nama Siswa</th><th>Kelas</th><th>Total Poin</th><th>Status Sanksi</th><th>Pelanggaran Terakhir</th></tr></thead>
-      <tbody id="tbl-top"></tbody>
-    </table></div>
-  </div>
-</div>
-
-<!-- INPUT -->
-<div id="page-input" class="hidden">
-  <div class="pnl">
-    <div class="pnl-hdr"><div class="pnl-title">✏️ Input Pelanggaran Baru</div></div>
-    <div class="pnl-body">
-      <div class="fg"><label>Cari Siswa (Nama / NISN)</label>
-        <input id="cari-siswa" placeholder="Ketik minimal 2 karakter..." oninput="filterSiswa()">
-        <div id="autocomplete"></div>
-      </div>
-      <div id="siswa-terpilih">
-        <div class="stn" id="sn"></div>
-        <div class="sti" id="si"></div>
-      </div>
-      <div class="fgrid mt2">
-        <div class="fg"><label>📅 Tanggal Pelanggaran</label>
-          <input type="date" id="inp-tgl"></div>
-        <div class="fg"><label>Kategori Pelanggaran</label>
-          <select id="inp-kat" onchange="isiJenis()"><option value="">– Pilih Kategori –</option></select></div>
-        <div class="fg"><label>Jenis Pelanggaran</label>
-          <select id="inp-jenis" onchange="isiPoin()"><option value="">– Pilih Jenis –</option></select></div>
-        <div class="fg"><label>Poin</label><input type="number" id="inp-poin" min="1" max="200" placeholder="Poin otomatis terisi"></div>
-        <div class="fg"><label>Dicatat Oleh</label><input id="inp-guru" placeholder="Nama guru / wali kelas"></div>
-      </div>
-      <div class="flex gap8 mt2">
-        <button class="btn bp" onclick="simpanP()" id="btn-sp">💾 Simpan Pelanggaran</button>
-        <button class="btn bo" onclick="resetInp()">✕ Reset</button>
+<!-- APP -->
+<div class="app-wrap">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="tb-brand">
+      <div class="tb-icon">📋</div>
+      <div>
+        <div class="tb-name">e-Disiplin</div>
+        <div class="tb-school">SMA Negeri 2 Banda Aceh</div>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- DATA SISWA -->
-<div id="page-siswa" class="hidden">
-  <div class="pnl">
-    <div class="pnl-hdr">
-      <div class="pnl-title">👥 Daftar Siswa</div>
-      <div class="flex gap8">
-        <button class="btn bg bsm" onclick="bukaImport()">📥 Import Data</button>
-        <button class="btn bp bsm" onclick="bukaTambahSiswa()">+ Tambah Siswa</button>
-      </div>
-    </div>
-    <div class="pnl-body" style="padding-bottom:.5rem">
-      <div class="flex gap8" style="margin-bottom:1rem">
-        <input id="cs-tbl" style="flex:1" placeholder="🔍 Cari nama atau NISN..." oninput="renderSiswa()">
-        <select id="fk" onchange="renderSiswa()" style="width:150px"><option value="">Semua Kelas</option></select>
-      </div>
-    </div>
-    <div class="tw"><table>
-      <thead><tr><th>NISN</th><th>Nama Siswa</th><th>Kelas</th><th>Total Poin</th><th>Status Sanksi</th><th style="width:90px"></th></tr></thead>
-      <tbody id="tbl-siswa"></tbody>
-    </table></div>
-  </div>
-</div>
-
-<!-- RIWAYAT -->
-<div id="page-riwayat" class="hidden">
-  <div class="pnl">
-    <div class="pnl-hdr"><div class="pnl-title">📋 Riwayat Pelanggaran</div></div>
-    <div class="pnl-body" style="padding-bottom:.5rem">
-      <div class="flex gap8" style="margin-bottom:1rem">
-        <input id="cr" style="flex:1" placeholder="🔍 Cari nama, NISN, atau jenis pelanggaran..." oninput="renderRiwayat()">
-        <select id="fkat" onchange="renderRiwayat()" style="width:170px"><option value="">Semua Kategori</option></select>
-      </div>
-    </div>
-    <div class="tw"><table>
-      <thead><tr><th>Tanggal &amp; Waktu</th><th>Siswa</th><th>Pelanggaran</th><th>Kategori</th><th>Poin</th><th style="width:60px"></th></tr></thead>
-      <tbody id="tbl-rwyt"></tbody>
-    </table></div>
-  </div>
-</div>
-
-<!-- SISWA VIEW -->
-<div id="page-siswa-view" class="hidden">
-  <div id="sv-ldg"><div class="ldg"><div class="spin"></div> Memuat data...</div></div>
-  <div id="sv-con" class="hidden">
-    <div class="sv-hero">
-      <div class="sv-hw">Selamat datang,</div>
-      <div class="sv-nm" id="sv-nm">–</div>
-      <div class="sv-kl" id="sv-kl">–</div>
-      <div class="sv-pw">
-        <div class="sv-pl">Total Poin Pelanggaran</div>
-        <div class="sv-pv" id="sv-pv">0</div>
-      </div>
-      <div class="sv-sk" id="sv-sk">–</div>
-      <div class="sv-dc" id="sv-dc">–</div>
-    </div>
-    <div class="pnl">
-      <div class="pnl-hdr"><div class="pnl-title">📋 Riwayat Pelanggaran Saya</div></div>
-      <div id="sv-list" style="padding:1rem"></div>
+    <div class="tb-right">
+      <span class="rb rb-guru" id="rbadge">–</span>
+      <button class="tbbtn" id="btn-cfg" onclick="bukaSettings()" style="display:none">⚙ Pengaturan</button>
+      <button class="tbbtn out" onclick="logout()">← Keluar</button>
     </div>
   </div>
-</div>
 
-</div><!-- /main -->
+  <!-- NAV -->
+  <div class="nav">
+    <button class="nb active" id="tab-dashboard" onclick="tab('dashboard')">📊 Dashboard</button>
+    <button class="nb guru-only" id="tab-input" onclick="tab('input')">✏️ Input Pelanggaran</button>
+    <button class="nb guru-only" id="tab-siswa" onclick="tab('siswa')">👥 Data Siswa</button>
+    <button class="nb guru-only" id="tab-riwayat" onclick="tab('riwayat')">📋 Riwayat</button>
+    <button class="nb hidden" id="tab-siswa-view" onclick="tab('siswa-view')">🎓 Poin Saya</button>
+  </div>
+  <div class="nacbar"></div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard">
+      <div class="sg">
+        <div class="sc blue"><div class="sc-icon">👥</div><div><div class="sc-val" id="st-t">–</div><div class="sc-lbl">Total Siswa</div></div></div>
+        <div class="sc red"><div class="sc-icon">⚠️</div><div><div class="sc-val" id="st-m">–</div><div class="sc-lbl">Poin Tertinggi</div></div></div>
+        <div class="sc amber"><div class="sc-icon">📋</div><div><div class="sc-val" id="st-p">–</div><div class="sc-lbl">Total Pelanggaran</div></div></div>
+        <div class="sc purple"><div class="sc-icon">🚨</div><div><div class="sc-val" id="st-k">–</div><div class="sc-lbl">Pembinaan IV+</div></div></div>
+      </div>
+      <div class="pnl">
+        <div class="pnl-hdr"><div class="pnl-title">🏆 Siswa Poin Tertinggi</div><span style="font-size:12px;color:var(--tm);font-weight:500">Top 10</span></div>
+        <div class="tw"><table>
+          <thead><tr><th>#</th><th>Nama Siswa</th><th>Kelas</th><th>Total Poin</th><th>Status Sanksi</th><th>Pelanggaran Terakhir</th></tr></thead>
+          <tbody id="tbl-top"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- INPUT PELANGGARAN -->
+    <div id="page-input" class="hidden">
+      <div class="pnl">
+        <div class="pnl-hdr"><div class="pnl-title">✏️ Input Pelanggaran Baru</div></div>
+        <div class="pnl-body">
+          <div class="sec-label">1. Pilih Siswa</div>
+          <div class="fg"><label>Cari Siswa (Nama / NISN)</label>
+            <input id="cari-siswa" placeholder="Ketik minimal 2 karakter nama atau NISN..." oninput="filterSiswa()">
+            <div id="autocomplete"></div>
+          </div>
+          <div id="siswa-terpilih">
+            <div class="stn" id="sn"></div>
+            <div class="sti" id="si"></div>
+          </div>
+
+          <div class="sec-label" style="margin-top:1.25rem">2. Detail Pelanggaran</div>
+          <div class="fgrid">
+            <div class="fg"><label>📅 Tanggal Pelanggaran</label><input type="date" id="inp-tgl"></div>
+            <div class="fg"><label>Kategori Pelanggaran</label>
+              <select id="inp-kat" onchange="isiJenis()"><option value="">– Pilih Kategori –</option></select></div>
+            <div class="fg"><label>Jenis Pelanggaran</label>
+              <select id="inp-jenis" onchange="isiPoin()"><option value="">– Pilih Jenis –</option></select></div>
+            <div class="fg"><label>Poin Pelanggaran</label><input type="number" id="inp-poin" min="1" max="200" placeholder="Terisi otomatis"></div>
+            <div class="fg"><label>Dicatat Oleh</label><input id="inp-guru" placeholder="Nama guru / wali kelas"></div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--br)">
+            <button class="btn bp" onclick="simpanP()" id="btn-sp">💾 Simpan Pelanggaran</button>
+            <button class="btn bo" onclick="resetInp()">✕ Reset Form</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATA SISWA -->
+    <div id="page-siswa" class="hidden">
+      <div class="pnl">
+        <div class="pnl-hdr">
+          <div class="pnl-title">👥 Daftar Siswa</div>
+          <div class="flex gap8">
+            <button class="btn bg bsm" onclick="bukaImport()">📥 Import Data</button>
+            <button class="btn bp bsm" onclick="bukaTambahSiswa()">+ Tambah Siswa</button>
+          </div>
+        </div>
+        <div class="sbar-wrap">
+          <div class="sbar">
+            <input id="cs-tbl" placeholder="🔍 Cari nama atau NISN..." oninput="renderSiswa()">
+            <select id="fk" onchange="renderSiswa()" style="width:160px"><option value="">Semua Kelas</option></select>
+          </div>
+        </div>
+        <div class="tw"><table>
+          <thead><tr><th>NISN</th><th>Nama Siswa</th><th>Kelas</th><th>Total Poin</th><th>Status Sanksi</th><th style="width:100px">Aksi</th></tr></thead>
+          <tbody id="tbl-siswa"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- RIWAYAT -->
+    <div id="page-riwayat" class="hidden">
+      <div class="pnl">
+        <div class="pnl-hdr"><div class="pnl-title">📋 Riwayat Pelanggaran</div></div>
+        <div class="sbar-wrap">
+          <div class="sbar">
+            <input id="cr" placeholder="🔍 Cari nama, NISN, atau jenis pelanggaran..." oninput="renderRiwayat()">
+            <select id="fkat" onchange="renderRiwayat()" style="width:180px"><option value="">Semua Kategori</option></select>
+          </div>
+        </div>
+        <div class="tw"><table>
+          <thead><tr><th>Tanggal &amp; Waktu</th><th>Siswa</th><th>Pelanggaran</th><th>Kategori</th><th>Poin</th><th style="width:60px"></th></tr></thead>
+          <tbody id="tbl-rwyt"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- SISWA VIEW -->
+    <div id="page-siswa-view" class="hidden">
+      <div id="sv-ldg"><div class="ldg"><div class="spin"></div> Memuat data Anda...</div></div>
+      <div id="sv-con" class="hidden">
+        <div class="sv-hero">
+          <div class="sv-hw">Selamat Datang</div>
+          <div class="sv-nm" id="sv-nm">–</div>
+          <div class="sv-kl" id="sv-kl">–</div>
+          <div class="sv-pw">
+            <div class="sv-pl">Total Poin Pelanggaran</div>
+            <div class="sv-pv" id="sv-pv">0</div>
+          </div>
+          <div class="sv-sk" id="sv-sk">–</div>
+          <div class="sv-dc" id="sv-dc">–</div>
+        </div>
+        <div class="pnl">
+          <div class="pnl-hdr"><div class="pnl-title">📋 Riwayat Pelanggaran Saya</div></div>
+          <div id="sv-list" style="padding:1.25rem"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app-wrap -->
 
 <!-- MODAL TAMBAH SISWA -->
 <div class="mover" id="m-s">
@@ -463,6 +508,7 @@ tbody tr:hover td{background:#FAFAFA}
     </div>
   </div>
 </div></div>
+
 
 <div class="toasts" id="toasts"></div>
 
