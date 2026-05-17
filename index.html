@@ -307,6 +307,8 @@ tbody tr:hover td{background:#FAFAFA}
         <div class="sti" id="si"></div>
       </div>
       <div class="fgrid mt2">
+        <div class="fg"><label>📅 Tanggal Pelanggaran</label>
+          <input type="date" id="inp-tgl"></div>
         <div class="fg"><label>Kategori Pelanggaran</label>
           <select id="inp-kat" onchange="isiJenis()"><option value="">– Pilih Kategori –</option></select></div>
         <div class="fg"><label>Jenis Pelanggaran</label>
@@ -631,7 +633,14 @@ function logout(){
 }
 
 // INIT
-window.onload=function(){isiKat();document.getElementById("login-screen").style.display="flex"};
+window.onload=function(){
+  isiKat();
+  document.getElementById("login-screen").style.display="flex";
+  // Set tanggal default = hari ini
+  const today=new Date().toISOString().split("T")[0];
+  const tglEl=document.getElementById("inp-tgl");
+  if(tglEl) tglEl.value=today;
+};
 
 // API
 async function apiCall(params){
@@ -833,18 +842,25 @@ function resetInp(){
   document.getElementById("inp-kat").value="";
   document.getElementById("inp-jenis").innerHTML='<option value="">– Pilih Jenis –</option>';
   document.getElementById("inp-poin").value="";
+  // Reset tanggal ke hari ini
+  document.getElementById("inp-tgl").value=new Date().toISOString().split("T")[0];
 }
 async function simpanP(){
   if(!S.siswaInp){toast("Pilih siswa dulu","err");return}
+  const tgl=document.getElementById("inp-tgl").value;
   const kat=document.getElementById("inp-kat").value;
   const jenis=document.getElementById("inp-jenis").value;
   const poin=parseInt(document.getElementById("inp-poin").value);
   const guru=document.getElementById("inp-guru").value||S.guru||"Guru";
+  if(!tgl){toast("Pilih tanggal pelanggaran","err");return}
   if(!jenis){toast("Pilih jenis pelanggaran","err");return}
   if(!poin||poin<1){toast("Poin tidak valid","err");return}
+  // Format tanggal: DD/MM/YYYY
+  const [ty,tm2,td]=tgl.split("-");
+  const tglFmt=`${td}/${tm2}/${ty}`;
   const btn=document.getElementById("btn-sp");
   btn.disabled=true;btn.textContent="Menyimpan...";
-  const res=await apiCall({action:"tambahPelanggaran",nisn:S.siswaInp.nisn,nama:S.siswaInp.nama,kelas:S.siswaInp.kelas,kategori:kat,jenisPelanggaran:jenis,poin,dicatatOleh:guru});
+  const res=await apiCall({action:"tambahPelanggaran",nisn:S.siswaInp.nisn,nama:S.siswaInp.nama,kelas:S.siswaInp.kelas,kategori:kat,jenisPelanggaran:jenis,poin,dicatatOleh:guru,tanggalManual:tglFmt});
   btn.disabled=false;btn.innerHTML="💾 Simpan Pelanggaran";
   if(res?.success){toast("Pelanggaran berhasil dicatat!","ok");resetInp();await muatData();}
   else toast(res?.message||"Gagal","err");
@@ -876,14 +892,17 @@ async function lihatRwyt(nisn,nama){
   ]);
   if(!rP?.success){document.getElementById("m-rs-i").innerHTML='<p style="color:var(--r);padding:1rem">Gagal memuat.</p>';return}
   const data=rP.data.reverse();
-  const s=siswa||{totalPoin:0};const skk=sk(s.totalPoin);
+  const s=siswa||{totalPoin:0,kelas:"–"};const skk=sk(s.totalPoin);
   document.getElementById("m-rs-i").innerHTML=`
-    <div style="display:flex;align-items:center;justify-content:space-between;background:var(--pl);border-radius:var(--rad-xs);padding:10px 14px;margin-bottom:1rem">
-      <span class="fw8" style="color:var(--p)">Total Poin: ${s.totalPoin}</span>
-      <span class="bdg ${skk.c}">${skk.l}</span>
+    <div style="display:flex;align-items:center;justify-content:space-between;background:var(--pl);border-radius:var(--rad-xs);padding:10px 14px;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div>
+        <span class="fw8" style="color:var(--p)">Total Poin: ${s.totalPoin}</span>
+        <span class="bdg ${skk.c}" style="margin-left:8px">${skk.l}</span>
+      </div>
+      <button class="btn bg bsm" onclick="downloadRekap('${esc(nisn)}','${esc(nama)}')">📄 Download Rekap</button>
     </div>
     ${!data.length?'<div class="empty"><div class="ei">🎉</div><div class="et">Tidak ada pelanggaran</div></div>':
-    data.map(p=>{const{d,w}=ftgl(p.timestamp);return`<div class="rvc">
+    data.map((p,i)=>{const{d,w}=ftgl(p.timestamp);return`<div class="rvc">
       <div class="rvi">${ki(p.kategori)}</div>
       <div class="rvc-body">
         <div class="rvc-j">${esc(p.jenisPelanggaran)}</div>
@@ -892,8 +911,137 @@ async function lihatRwyt(nisn,nama){
           <span style="font-size:11px;color:var(--ts)">📅 ${d}${w?" · "+w:""}</span>
         </div>
       </div>
-      <div>${pp(p.poin)}</div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        ${pp(p.poin)}
+        <button class="btn br2 bsm" title="Hapus pelanggaran ini" onclick="hapusPelDariModal(${p.id},'${esc(nisn)}','${esc(nama)}')">🗑</button>
+      </div>
     </div>`}).join("")}`;
+}
+
+async function hapusPelDariModal(idx,nisn,nama){
+  if(!confirm("Hapus pelanggaran ini? Poin siswa akan dikurangi."))return;
+  const r=await apiCall({action:"hapusPelanggaran",rowIndex:idx});
+  if(r?.success){toast("Pelanggaran dihapus","ok");await muatData();await lihatRwyt(nisn,nama);}
+  else toast(r?.message||"Gagal","err");
+}
+
+function downloadRekap(nisn,nama){
+  const siswa=S.siswa.find(s=>s.nisn===nisn)||{totalPoin:0,kelas:"–",nisn,nama};
+  const listP=S.pelanggaran.filter(p=>p.nisn===nisn);
+  const skk=sk(siswa.totalPoin);
+  const tglCetak=new Date().toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"});
+
+  const rows=listP.length?listP.map((p,i)=>{
+    const{d}=ftgl(p.timestamp);
+    return`<tr>
+      <td>${i+1}</td>
+      <td>${d}</td>
+      <td>${esc(p.kategori)}</td>
+      <td>${esc(p.jenisPelanggaran)}</td>
+      <td style="text-align:center;font-weight:700;color:#DC2626">${p.poin}</td>
+      <td>${esc(p.dicatatOleh||"–")}</td>
+    </tr>`;
+  }).join(""):
+  `<tr><td colspan="6" style="text-align:center;color:#9CA3AF;padding:20px">Tidak ada pelanggaran tercatat</td></tr>`;
+
+  const html=`<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Rekap Pelanggaran - ${nama}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,sans-serif;font-size:13px;color:#111;background:#fff;padding:30px}
+  .kop{display:flex;align-items:center;gap:18px;border-bottom:3px solid #4F46E5;padding-bottom:14px;margin-bottom:20px}
+  .kop-icon{width:52px;height:52px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+  .kop-title{font-size:17px;font-weight:800;color:#4F46E5}
+  .kop-sub{font-size:12px;color:#6B7280;margin-top:2px}
+  h2{font-size:15px;margin:18px 0 10px;color:#111;font-weight:800;border-left:4px solid #4F46E5;padding-left:10px}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;padding:14px;margin-bottom:18px}
+  .info-item label{font-size:10px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px}
+  .info-item span{font-size:14px;font-weight:700;color:#111}
+  .sanksi-box{background:#EEF2FF;border:1.5px solid #4F46E5;border-radius:8px;padding:10px 16px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+  .sanksi-label{font-size:12px;color:#6B7280}
+  .sanksi-val{font-size:15px;font-weight:800;color:#4F46E5}
+  .sanksi-poin{font-size:22px;font-weight:900;color:#DC2626}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  thead{background:#4F46E5}
+  th{padding:9px 10px;color:#fff;font-weight:700;text-align:left;font-size:11px}
+  td{padding:9px 10px;border-bottom:1px solid #F3F4F6;vertical-align:top}
+  tr:nth-child(even) td{background:#F9FAFB}
+  .ttd{margin-top:36px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;text-align:center}
+  .ttd-box{border-top:1px solid #111;padding-top:6px;font-size:11px}
+  .ttd-label{font-size:10px;color:#6B7280;margin-bottom:40px}
+  .footer{margin-top:28px;font-size:10px;color:#9CA3AF;text-align:center;border-top:1px solid #E5E7EB;padding-top:10px}
+  @media print{body{padding:15px}.no-print{display:none}}
+</style>
+</head>
+<body>
+<div class="kop">
+  <div class="kop-icon">📋</div>
+  <div>
+    <div class="kop-title">REKAP PELANGGARAN SISWA</div>
+    <div class="kop-sub">SMA Negeri 2 Banda Aceh &nbsp;·&nbsp; Sistem e-Disiplin</div>
+  </div>
+  <div style="margin-left:auto;text-align:right;no-print">
+    <button onclick="window.print()" style="background:#4F46E5;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer" class="no-print">🖨️ Cetak / PDF</button>
+  </div>
+</div>
+
+<h2>Data Siswa</h2>
+<div class="info-grid">
+  <div class="info-item"><label>Nama Lengkap</label><span>${esc(nama)}</span></div>
+  <div class="info-item"><label>NISN</label><span>${esc(nisn)||"–"}</span></div>
+  <div class="info-item"><label>Kelas</label><span>${esc(siswa.kelas)}</span></div>
+  <div class="info-item"><label>Tanggal Cetak</label><span>${tglCetak}</span></div>
+</div>
+
+<div class="sanksi-box">
+  <div>
+    <div class="sanksi-label">Status Sanksi Saat Ini</div>
+    <div class="sanksi-val">${skk.l}</div>
+    <div style="font-size:11px;color:#6B7280;margin-top:2px">${skk.r}</div>
+  </div>
+  <div style="text-align:right">
+    <div class="sanksi-label">Total Poin</div>
+    <div class="sanksi-poin">${siswa.totalPoin}</div>
+  </div>
+</div>
+
+<h2>Riwayat Pelanggaran (${listP.length} catatan)</h2>
+<table>
+  <thead><tr><th>#</th><th>Tanggal</th><th>Kategori</th><th>Jenis Pelanggaran</th><th>Poin</th><th>Dicatat Oleh</th></tr></thead>
+  <tbody>${rows}</tbody>
+  <tfoot>
+    <tr style="background:#F3F4F6">
+      <td colspan="4" style="font-weight:700;text-align:right;padding:10px">TOTAL POIN:</td>
+      <td style="font-weight:900;color:#DC2626;font-size:15px;text-align:center">${siswa.totalPoin}</td>
+      <td></td>
+    </tr>
+  </tfoot>
+</table>
+
+<div class="ttd">
+  <div>
+    <div class="ttd-label">Orang Tua / Wali</div>
+    <div class="ttd-box">(...........................)</div>
+  </div>
+  <div>
+    <div class="ttd-label">Wali Kelas</div>
+    <div class="ttd-box">(...........................)</div>
+  </div>
+  <div>
+    <div class="ttd-label">Kepala Sekolah</div>
+    <div class="ttd-box">(...........................)</div>
+  </div>
+</div>
+
+<div class="footer">Dokumen ini dicetak secara otomatis dari sistem e-Disiplin SMAN 2 Banda Aceh &nbsp;·&nbsp; ${tglCetak}</div>
+</body></html>`;
+
+  const w=window.open("","_blank");
+  w.document.write(html);
+  w.document.close();
 }
 async function hapusPel(idx){
   if(!confirm("Hapus pelanggaran ini? Poin siswa akan dikurangi."))return;
