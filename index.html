@@ -944,7 +944,10 @@ async function lihatRwyt(nisn,nama){
         <span class="fw8" style="color:var(--p)">Total Poin: ${s.totalPoin}</span>
         <span class="bdg ${skk.c}" style="margin-left:8px">${skk.l}</span>
       </div>
-      <button class="btn bg bsm" onclick="downloadRekap('${esc(nisn)}','${esc(nama)}')">📄 Download Rekap</button>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn bg bsm" onclick="pdfCatatan('${esc(nisn)}','${esc(nama)}')">📄 Catatan Pelanggaran</button>
+        <button class="btn bp bsm" onclick="pdfPembinaan('${esc(nisn)}','${esc(nama)}')">📝 Catatan Pembinaan</button>
+      </div>
     </div>
     ${!data.length?'<div class="empty"><div class="ei">🎉</div><div class="et">Tidak ada pelanggaran</div></div>':
     data.map((p,i)=>{const{d,w}=ftgl(p.timestamp);return`<div class="rvc">
@@ -970,123 +973,311 @@ async function hapusPelDariModal(idx,nisn,nama){
   else toast(r?.message||"Gagal","err");
 }
 
-function downloadRekap(nisn,nama){
+// ── PDF DOC 1: CATATAN PELANGGARAN ──
+function pdfCatatan(nisn,nama){
   const siswa=S.siswa.find(s=>s.nisn===nisn)||{totalPoin:0,kelas:"–",nisn,nama};
   const listP=S.pelanggaran.filter(p=>p.nisn===nisn);
-  const skk=sk(siswa.totalPoin);
   const tglCetak=new Date().toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"});
 
-  const rows=listP.length?listP.map((p,i)=>{
+  // Baris data + baris kosong tambahan untuk tulis tangan (min 10 baris)
+  const totalRows=Math.max(listP.length,10);
+  const dataRows=listP.map((p,i)=>{
     const{d}=ftgl(p.timestamp);
     return`<tr>
-      <td>${i+1}</td>
+      <td style="text-align:center">${i+1}</td>
       <td>${d}</td>
-      <td>${esc(p.kategori)}</td>
       <td>${esc(p.jenisPelanggaran)}</td>
-      <td style="text-align:center;font-weight:700;color:#DC2626">${p.poin}</td>
-      <td>${esc(p.dicatatOleh||"–")}</td>
+      <td style="text-align:center;font-weight:700;color:#B91C1C">${p.poin}</td>
+      <td></td>
     </tr>`;
-  }).join(""):
-  `<tr><td colspan="6" style="text-align:center;color:#9CA3AF;padding:20px">Tidak ada pelanggaran tercatat</td></tr>`;
+  }).join("");
+
+  const emptyRows=Array.from({length:Math.max(0,10-listP.length)},(_,i)=>`<tr>
+    <td style="text-align:center">${listP.length+i+1}</td>
+    <td>&nbsp;</td><td></td><td></td><td></td>
+  </tr>`).join("");
 
   const html=`<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Rekap Pelanggaran - ${nama}</title>
+<title>Catatan Pelanggaran - ${nama}</title>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Arial,sans-serif;font-size:13px;color:#111;background:#fff;padding:30px}
-  .kop{display:flex;align-items:center;gap:18px;border-bottom:3px solid #4F46E5;padding-bottom:14px;margin-bottom:20px}
-  .kop-icon{width:52px;height:52px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
-  .kop-title{font-size:17px;font-weight:800;color:#4F46E5}
-  .kop-sub{font-size:12px;color:#6B7280;margin-top:2px}
-  h2{font-size:15px;margin:18px 0 10px;color:#111;font-weight:800;border-left:4px solid #4F46E5;padding-left:10px}
-  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;padding:14px;margin-bottom:18px}
-  .info-item label{font-size:10px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px}
-  .info-item span{font-size:14px;font-weight:700;color:#111}
-  .sanksi-box{background:#EEF2FF;border:1.5px solid #4F46E5;border-radius:8px;padding:10px 16px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
-  .sanksi-label{font-size:12px;color:#6B7280}
-  .sanksi-val{font-size:15px;font-weight:800;color:#4F46E5}
-  .sanksi-poin{font-size:22px;font-weight:900;color:#DC2626}
-  table{width:100%;border-collapse:collapse;font-size:12px}
-  thead{background:#4F46E5}
-  th{padding:9px 10px;color:#fff;font-weight:700;text-align:left;font-size:11px}
-  td{padding:9px 10px;border-bottom:1px solid #F3F4F6;vertical-align:top}
-  tr:nth-child(even) td{background:#F9FAFB}
-  .ttd{margin-top:36px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;text-align:center}
-  .ttd-box{border-top:1px solid #111;padding-top:6px;font-size:11px}
-  .ttd-label{font-size:10px;color:#6B7280;margin-bottom:40px}
-  .footer{margin-top:28px;font-size:10px;color:#9CA3AF;text-align:center;border-top:1px solid #E5E7EB;padding-top:10px}
-  @media print{body{padding:15px}.no-print{display:none}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;font-size:12px;color:#000;background:#fff;padding:24px 32px}
+.kop{text-align:center;margin-bottom:6px}
+.kop-sekolah{font-size:16px;font-weight:900;letter-spacing:.5px;text-transform:uppercase}
+.kop-alamat{font-size:10px;color:#444;margin-top:2px}
+.kop-hr{border:none;border-top:3px solid #000;margin:8px 0 2px}
+.kop-hr2{border:none;border-top:1px solid #000;margin:2px 0 14px}
+.doc-title{text-align:center;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;text-decoration:underline}
+.identitas{margin-bottom:16px}
+.id-row{display:flex;align-items:baseline;margin-bottom:5px;font-size:12px}
+.id-label{min-width:120px;font-weight:700}
+.id-dots{flex:1;border-bottom:1px dotted #999;min-width:20px;margin:0 4px;margin-bottom:2px}
+.id-value{min-width:200px;font-weight:600;font-size:13px}
+table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:11.5px}
+th{background:#1E1B4B;color:#fff;padding:8px 6px;text-align:center;font-size:11px;font-weight:700;border:1px solid #1E1B4B}
+td{padding:7px 6px;border:1px solid #CBD5E1;vertical-align:middle}
+td:nth-child(1){width:32px;text-align:center}
+td:nth-child(2){width:100px}
+td:nth-child(4){width:40px;text-align:center}
+td:nth-child(5){width:70px}
+.total-row td{font-weight:700;background:#F1F5F9}
+.ttd-wrap{margin-top:24px;display:flex;justify-content:space-between;gap:16px}
+.ttd-box{flex:1;text-align:center}
+.ttd-title{font-size:11px;font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px}
+.ttd-space{height:60px;border-bottom:1px solid #000;width:80%;margin:0 auto}
+.ttd-name{margin-top:4px;font-size:11px;font-weight:700;min-height:16px}
+.ttd-sub{font-size:10px;color:#555;margin-top:1px}
+.footer-note{margin-top:20px;font-size:10px;color:#666;border-top:1px solid #E5E7EB;padding-top:8px;text-align:center}
+.mengetahui{font-size:11px;font-weight:700;text-align:center;margin:0 0 10px;text-transform:uppercase;letter-spacing:.3px}
+@media print{
+  body{padding:10px 16px}
+  .no-print{display:none!important}
+  @page{size:A4;margin:1.5cm}
+}
 </style>
 </head>
 <body>
+
+<div class="no-print" style="text-align:right;margin-bottom:16px">
+  <button onclick="window.print()" style="background:#1E1B4B;color:#fff;border:none;padding:9px 22px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.3px">🖨️ Cetak / Simpan PDF</button>
+</div>
+
 <div class="kop">
-  <div class="kop-icon">📋</div>
-  <div>
-    <div class="kop-title">REKAP PELANGGARAN SISWA</div>
-    <div class="kop-sub">SMA Negeri 2 Banda Aceh &nbsp;·&nbsp; Sistem e-Disiplin</div>
+  <div class="kop-sekolah">SMA Negeri 2 Banda Aceh</div>
+  <div class="kop-alamat">Jl. Pocut Baren No.10, Banda Aceh &nbsp;|&nbsp; Telp: (0651) 22635 &nbsp;|&nbsp; e-Disiplin</div>
+  <hr class="kop-hr">
+  <hr class="kop-hr2">
+</div>
+
+<div class="doc-title">Catatan Pelanggaran Tata Tertib Siswa</div>
+
+<div class="identitas">
+  <div class="id-row">
+    <span class="id-label">Nama Siswa</span>
+    <span style="margin-right:4px">:</span>
+    <span class="id-value">${esc(nama)}</span>
   </div>
-  <div style="margin-left:auto;text-align:right;no-print">
-    <button onclick="window.print()" style="background:#4F46E5;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer" class="no-print">🖨️ Cetak / PDF</button>
+  <div class="id-row">
+    <span class="id-label">Kelas</span>
+    <span style="margin-right:4px">:</span>
+    <span class="id-value">${esc(siswa.kelas)}</span>
+  </div>
+  <div class="id-row">
+    <span class="id-label">NISN</span>
+    <span style="margin-right:4px">:</span>
+    <span class="id-value">${esc(nisn)||"–"}</span>
+  </div>
+  <div class="id-row">
+    <span class="id-label">Tahun Pelajaran</span>
+    <span style="margin-right:4px">:</span>
+    <span class="id-value">2024 / 2025</span>
   </div>
 </div>
 
-<h2>Data Siswa</h2>
-<div class="info-grid">
-  <div class="info-item"><label>Nama Lengkap</label><span>${esc(nama)}</span></div>
-  <div class="info-item"><label>NISN</label><span>${esc(nisn)||"–"}</span></div>
-  <div class="info-item"><label>Kelas</label><span>${esc(siswa.kelas)}</span></div>
-  <div class="info-item"><label>Tanggal Cetak</label><span>${tglCetak}</span></div>
-</div>
-
-<div class="sanksi-box">
-  <div>
-    <div class="sanksi-label">Status Sanksi Saat Ini</div>
-    <div class="sanksi-val">${skk.l}</div>
-    <div style="font-size:11px;color:#6B7280;margin-top:2px">${skk.r}</div>
-  </div>
-  <div style="text-align:right">
-    <div class="sanksi-label">Total Poin</div>
-    <div class="sanksi-poin">${siswa.totalPoin}</div>
-  </div>
-</div>
-
-<h2>Riwayat Pelanggaran (${listP.length} catatan)</h2>
 <table>
-  <thead><tr><th>#</th><th>Tanggal</th><th>Kategori</th><th>Jenis Pelanggaran</th><th>Poin</th><th>Dicatat Oleh</th></tr></thead>
-  <tbody>${rows}</tbody>
-  <tfoot>
-    <tr style="background:#F3F4F6">
-      <td colspan="4" style="font-weight:700;text-align:right;padding:10px">TOTAL POIN:</td>
-      <td style="font-weight:900;color:#DC2626;font-size:15px;text-align:center">${siswa.totalPoin}</td>
+  <thead>
+    <tr>
+      <th>No.</th>
+      <th>Hari / Tanggal</th>
+      <th>Uraian Kasus</th>
+      <th>Poin</th>
+      <th>TTD</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${dataRows}${emptyRows}
+    <tr class="total-row">
+      <td colspan="3" style="text-align:right;padding-right:10px;font-size:12px">TOTAL POIN PELANGGARAN</td>
+      <td style="text-align:center;font-size:14px;color:#B91C1C;font-weight:900">${siswa.totalPoin}</td>
       <td></td>
     </tr>
-  </tfoot>
+  </tbody>
 </table>
 
-<div class="ttd">
-  <div>
-    <div class="ttd-label">Orang Tua / Wali</div>
-    <div class="ttd-box">(...........................)</div>
+<p class="mengetahui">Mengetahui :</p>
+<div class="ttd-wrap">
+  <div class="ttd-box">
+    <div class="ttd-title">Guru BK</div>
+    <div class="ttd-space"></div>
+    <div class="ttd-name">( _________________________ )</div>
+    <div class="ttd-sub">NIP. ___________________</div>
   </div>
-  <div>
-    <div class="ttd-label">Wali Kelas</div>
-    <div class="ttd-box">(...........................)</div>
-  </div>
-  <div>
-    <div class="ttd-label">Kepala Sekolah</div>
-    <div class="ttd-box">(...........................)</div>
+  <div class="ttd-box">
+    <div class="ttd-title">Wali Kelas</div>
+    <div class="ttd-space"></div>
+    <div class="ttd-name">( _________________________ )</div>
+    <div class="ttd-sub">NIP. ___________________</div>
   </div>
 </div>
 
-<div class="footer">Dokumen ini dicetak secara otomatis dari sistem e-Disiplin SMAN 2 Banda Aceh &nbsp;·&nbsp; ${tglCetak}</div>
+<div class="footer-note">Dicetak dari Sistem e-Disiplin SMA Negeri 2 Banda Aceh &nbsp;&bull;&nbsp; ${tglCetak}</div>
 </body></html>`;
 
   const w=window.open("","_blank");
-  w.document.write(html);
-  w.document.close();
+  w.document.write(html);w.document.close();
+}
+
+// ── PDF DOC 2: CATATAN PEMBINAAN ──
+function pdfPembinaan(nisn,nama){
+  const siswa=S.siswa.find(s=>s.nisn===nisn)||{totalPoin:0,kelas:"–",nisn,nama};
+  const listP=S.pelanggaran.filter(p=>p.nisn===nisn);
+  const tglCetak=new Date().toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"});
+
+  const dataRows=listP.map((p,i)=>{
+    const{d}=ftgl(p.timestamp);
+    return`<tr>
+      <td style="text-align:center">${i+1}</td>
+      <td>${d}</td>
+      <td>${esc(p.jenisPelanggaran)}</td>
+      <td></td>
+      <td></td>
+    </tr>`;
+  }).join("");
+
+  const emptyRows=Array.from({length:Math.max(0,8-listP.length)},(_,i)=>`<tr>
+    <td style="text-align:center">${listP.length+i+1}</td>
+    <td>&nbsp;</td><td style="height:36px"></td><td></td><td></td>
+  </tr>`).join("");
+
+  const html=`<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Catatan Pembinaan - ${nama}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;font-size:12px;color:#000;background:#fff;padding:24px 32px}
+.kop{text-align:center;margin-bottom:6px}
+.kop-sekolah{font-size:16px;font-weight:900;letter-spacing:.5px;text-transform:uppercase}
+.kop-alamat{font-size:10px;color:#444;margin-top:2px}
+.kop-hr{border:none;border-top:3px solid #000;margin:8px 0 2px}
+.kop-hr2{border:none;border-top:1px solid #000;margin:2px 0 14px}
+.doc-title{text-align:center;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;text-decoration:underline}
+.identitas{margin-bottom:16px}
+.id-row{display:flex;align-items:baseline;margin-bottom:5px;font-size:12px}
+.id-label{min-width:120px;font-weight:700}
+.id-value{min-width:200px;font-weight:600;font-size:13px}
+table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:11px}
+th{background:#1E1B4B;color:#fff;padding:8px 6px;text-align:center;font-size:10.5px;font-weight:700;border:1px solid #1E1B4B}
+td{padding:6px;border:1px solid #CBD5E1;vertical-align:top;min-height:36px}
+td:nth-child(1){width:28px;text-align:center}
+td:nth-child(2){width:88px}
+td:nth-child(3){width:auto}
+td:nth-child(4){width:110px}
+td:nth-child(5){width:110px}
+.catatan-box{margin-top:16px;border:1px solid #CBD5E1;border-radius:6px;padding:10px 14px;min-height:80px}
+.catatan-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;color:#374151}
+.catatan-lines{border-bottom:1px solid #E5E7EB;height:18px;margin-bottom:4px}
+.ttd-wrap{margin-top:24px;display:flex;justify-content:space-between;gap:12px}
+.ttd-box{flex:1;text-align:center}
+.ttd-title{font-size:11px;font-weight:700;margin-bottom:2px;text-transform:uppercase;letter-spacing:.3px}
+.ttd-lokasi{font-size:10px;color:#555;margin-bottom:4px}
+.ttd-space{height:60px;border-bottom:1px solid #000;width:80%;margin:0 auto}
+.ttd-name{margin-top:4px;font-size:11px;font-weight:700;min-height:16px}
+.ttd-sub{font-size:10px;color:#555;margin-top:1px}
+.footer-note{margin-top:20px;font-size:10px;color:#666;border-top:1px solid #E5E7EB;padding-top:8px;text-align:center}
+@media print{
+  body{padding:10px 16px}
+  .no-print{display:none!important}
+  @page{size:A4;margin:1.5cm}
+}
+</style>
+</head>
+<body>
+
+<div class="no-print" style="text-align:right;margin-bottom:16px">
+  <button onclick="window.print()" style="background:#1E1B4B;color:#fff;border:none;padding:9px 22px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer">🖨️ Cetak / Simpan PDF</button>
+</div>
+
+<div class="kop">
+  <div class="kop-sekolah">SMA Negeri 2 Banda Aceh</div>
+  <div class="kop-alamat">Jl. Pocut Baren No.10, Banda Aceh &nbsp;|&nbsp; Telp: (0651) 22635 &nbsp;|&nbsp; e-Disiplin</div>
+  <hr class="kop-hr">
+  <hr class="kop-hr2">
+</div>
+
+<div class="doc-title">Catatan Pembinaan Pelanggaran Tata Tertib Siswa</div>
+
+<div class="identitas">
+  <div class="id-row">
+    <span class="id-label">Nama Siswa</span>
+    <span style="margin-right:4px">:</span>
+    <span class="id-value">${esc(nama)}</span>
+  </div>
+  <div class="id-row">
+    <span class="id-label">Kelas</span>
+    <span style="margin-right:4px">:</span>
+    <span class="id-value">${esc(siswa.kelas)}</span>
+  </div>
+  <div class="id-row">
+    <span class="id-label">NISN</span>
+    <span style="margin-right:4px">:</span>
+    <span class="id-value">${esc(nisn)||"–"}</span>
+  </div>
+  <div class="id-row">
+    <span class="id-label">Tahun Pelajaran</span>
+    <span style="margin-right:4px">:</span>
+    <span class="id-value">2024 / 2025</span>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2">No.</th>
+      <th rowspan="2">Hari /<br>Tanggal</th>
+      <th rowspan="2">Uraian Kasus, Bentuk Pembinaan<br>dan Kesepakatan Penanganan</th>
+      <th colspan="2">Tanda Tangan</th>
+    </tr>
+    <tr>
+      <th>Siswa /<br>Orang Tua</th>
+      <th>Wali Kelas /<br>Guru BK</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${dataRows}${emptyRows}
+  </tbody>
+</table>
+
+<div class="catatan-box">
+  <div class="catatan-title">Catatan :</div>
+  <div class="catatan-lines"></div>
+  <div class="catatan-lines"></div>
+  <div class="catatan-lines"></div>
+  <div class="catatan-lines"></div>
+</div>
+
+<div class="ttd-wrap" style="margin-top:28px">
+  <div class="ttd-box">
+    <div class="ttd-lokasi">Banda Aceh, ${tglCetak}</div>
+    <div class="ttd-title">Orang Tua / Wali Siswa</div>
+    <div class="ttd-space"></div>
+    <div class="ttd-name">( _________________________ )</div>
+  </div>
+  <div class="ttd-box">
+    <div class="ttd-lokasi">&nbsp;</div>
+    <div class="ttd-title">Wali Kelas</div>
+    <div class="ttd-space"></div>
+    <div class="ttd-name">( _________________________ )</div>
+    <div class="ttd-sub">NIP. ___________________</div>
+  </div>
+  <div class="ttd-box">
+    <div class="ttd-lokasi">&nbsp;</div>
+    <div class="ttd-title">Guru BK</div>
+    <div class="ttd-space"></div>
+    <div class="ttd-name">( _________________________ )</div>
+    <div class="ttd-sub">NIP. ___________________</div>
+  </div>
+</div>
+
+<div class="footer-note">Dicetak dari Sistem e-Disiplin SMA Negeri 2 Banda Aceh &nbsp;&bull;&nbsp; ${tglCetak}</div>
+</body></html>`;
+
+  const w=window.open("","_blank");
+  w.document.write(html);w.document.close();
 }
 async function hapusPel(idx){
   if(!confirm("Hapus pelanggaran ini? Poin siswa akan dikurangi."))return;
